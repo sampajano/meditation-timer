@@ -266,7 +266,7 @@ struct MeditationAppView: View {
                         .clipShape(Capsule())
                 }
                 
-                Text(formatTime(overtimeActive ? overtimeElapsed : (countdownActive ? countdownTimeLeft : timeLeft)))
+                Text(timerDisplayText)
                     .font(.system(size: isSessionActive ? 74 : 72, weight: .light, design: .rounded))
                     .foregroundColor(dhammaSoftGold)
                     .shadow(color: Color.black.opacity(0.46), radius: isSessionActive ? 8 : 7, x: 0, y: 3)
@@ -774,9 +774,7 @@ struct MeditationAppView: View {
     private var nextOvertimeBellRemaining: TimeInterval? {
         guard hasIntermediateBells else { return nil }
         let spacing = max(1, Int(round(intermediateBellSpacing)))
-        let elapsed = max(0, overtimeElapsed)
-        let nextBell = ceil((elapsed + 0.001) / Double(spacing)) * Double(spacing)
-        return max(0, nextBell - elapsed)
+        return TimerBellLogic.nextOvertimeBellRemaining(overtimeElapsed: overtimeElapsed, spacing: spacing)
     }
 
     private var sessionBellStatusText: String? {
@@ -794,11 +792,15 @@ struct MeditationAppView: View {
     }
 
     private func formatBellCountdownText(_ seconds: TimeInterval) -> String {
-        let roundedMinutes = Int(ceil(max(0, seconds) / 60))
-        guard roundedMinutes > 0 else {
-            return "<1m"
+        TimerBellLogic.formatBellCountdownText(seconds)
+    }
+
+    private var timerDisplayText: String {
+        if overtimeActive {
+            return TimerBellLogic.formatElapsedClockText(overtimeElapsed)
         }
-        return "\(roundedMinutes)m"
+
+        return TimerBellLogic.formatCountdownClockText(countdownActive ? countdownTimeLeft : timeLeft)
     }
     
     private func formatTime(_ seconds: TimeInterval) -> String {
@@ -931,7 +933,7 @@ struct MeditationAppView: View {
                 if let start = overtimeStartTime {
                     overtimeElapsed = overtimeAccumulated + Date().timeIntervalSince(start)
                 }
-                playOvertimeIntermediateBellIfNeeded(currentSecond: Int(overtimeElapsed))
+                playOvertimeIntermediateBellIfNeeded(currentSecond: TimerBellLogic.elapsedSecondForBellProcessing(overtimeElapsed))
                 timeLeft = 0
                 return
             }

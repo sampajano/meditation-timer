@@ -1,0 +1,39 @@
+import Foundation
+
+enum TimerBellLogic {
+    static func formatBellCountdownText(_ seconds: TimeInterval) -> String {
+        let remaining = max(0, seconds)
+        if remaining <= 30 {
+            return "\(max(1, Int(ceil(remaining))))s"
+        }
+
+        return "\(Int(ceil(remaining / 60)))m"
+    }
+
+    static func formatCountdownClockText(_ seconds: TimeInterval) -> String {
+        let totalSeconds = seconds <= 0 ? 0 : Int(ceil(seconds))
+        return formatClockText(totalSeconds)
+    }
+
+    static func formatElapsedClockText(_ seconds: TimeInterval) -> String {
+        let totalSeconds = Int(floor(max(0, seconds)))
+        return formatClockText(totalSeconds)
+    }
+
+    static func nextOvertimeBellRemaining(overtimeElapsed: TimeInterval, spacing: Int) -> TimeInterval {
+        let bellSpacing = max(1, spacing)
+        let elapsed = max(0, overtimeElapsed)
+        let nextBell = (floor(elapsed / Double(bellSpacing)) + 1) * Double(bellSpacing)
+        return max(0, nextBell - elapsed)
+    }
+
+    static func elapsedSecondForBellProcessing(_ elapsed: TimeInterval) -> Int {
+        Int(floor(max(0, elapsed) + 0.02))
+    }
+
+    private static func formatClockText(_ totalSeconds: Int) -> String {
+        let mins = totalSeconds / 60
+        let secs = totalSeconds % 60
+        return String(format: "%d:%02d", mins, secs)
+    }
+}

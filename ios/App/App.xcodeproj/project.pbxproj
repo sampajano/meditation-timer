@@ -10,6 +10,7 @@
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
+		50C000021FEDC1A000F3C39B /* TimerBellLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */; };
 		50B271D11FEDC1A000F3C39B /* web-public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* web-public */; };
 /* End PBXBuildFile section */
 
@@ -20,6 +21,7 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* web-public */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "web-public"; path = ../../web/public; sourceTree = SOURCE_ROOT; };
+		50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerBellLogic.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3071FED79650016851F /* AppDelegate.swift */,
+				50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
@@ -138,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				50C000021FEDC1A000F3C39B /* TimerBellLogic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
