@@ -4,6 +4,12 @@ Golden Meditation Timer is an iOS-first meditation timer. The production iPhone 
 
 Much gratitude toward [Gongmeister](http://gongmeister.app/) for the inspiration. Golden Meditation Timer adapts the idea for my own practice preferences, reliable background running when the app is closed (good for walking meditation), and other practice-specific flows close to daily life.
 
+## App Icon
+
+<p>
+  <img src="docs/images/app-icon-candidates/new-b-side-bright-moon.png" alt="Golden Meditation Timer app icon" width="180">
+</p>
+
 ## Screenshots
 
 <p>
