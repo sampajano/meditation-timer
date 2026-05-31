@@ -1152,12 +1152,12 @@ struct MeditationAppView: View {
     private func playGong() {
         triggerHaptic()
         if let player = startPlayer {
-            player.rate = 0.60 // Elegantly lower-pitched, highly grounding resonant frequency
-            player.volume = 0.0 // Start at 0 volume to suppress the harsh mallet hit
+            player.rate = 1.0
+            player.volume = 0.0
             player.enableRate = true
             player.currentTime = 0
             player.play()
-            player.setVolume(0.8, fadeDuration: 0.6) // Smoothly swell in the resonance over 0.6 seconds
+            player.setVolume(0.8, fadeDuration: 0.04)
         }
     }
     
@@ -1165,12 +1165,12 @@ struct MeditationAppView: View {
         triggerHaptic()
         if intervalSound == "bowl" {
             if let player = startPlayer {
-                player.rate = 0.60 // Elegantly lower-pitched, highly grounding resonant frequency
-                player.volume = 0.0 // Start at 0 volume to suppress the harsh mallet hit
+                player.rate = 1.0
+                player.volume = 0.0
                 player.enableRate = true
                 player.currentTime = 0
                 player.play()
-                player.setVolume(0.8, fadeDuration: 0.6) // Smoothly swell in the resonance over 0.6 seconds
+                player.setVolume(0.8, fadeDuration: 0.04)
             }
         } else {
             if let player = tingshaPlayer {
