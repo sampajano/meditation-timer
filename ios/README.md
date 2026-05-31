@@ -14,6 +14,8 @@ npm run ios:open
 
 ## Architecture
 
+![Golden Meditation iOS architecture](docs/ios-architecture.png)
+
 - `ios/App/App/AppDelegate.swift` is the native app entry point and contains the SwiftUI timer UI.
 - `ios/App/App/Info.plist` enables the iOS `audio` background mode.
 - `web/public/` contains shared static assets used by the iOS bundle.
