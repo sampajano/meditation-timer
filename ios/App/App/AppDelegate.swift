@@ -3,8 +3,110 @@ import SwiftUI
 import AVFoundation
 
 private let maxMeditationTime: TimeInterval = 60 * 60
+private let defaultMeditationTime: TimeInterval = 20 * 60
 private let defaultCountdownDuration: TimeInterval = 15
 private let maxCountdownDuration: TimeInterval = 60
+private let defaultIntervalCount = 2
+
+private struct MeditationPreferences {
+    private enum Key {
+        static let totalTime = "meditation.preferences.totalTime"
+        static let intervalInputMode = "meditation.preferences.intervalInputMode"
+        static let intervalCount = "meditation.preferences.intervalCount"
+        static let intervalX = "meditation.preferences.intervalX"
+        static let isCountdownEnabled = "meditation.preferences.isCountdownEnabled"
+        static let countdownDuration = "meditation.preferences.countdownDuration"
+    }
+
+    var totalTime: TimeInterval
+    var intervalInputMode: String
+    var intervalCount: Int
+    var intervalX: TimeInterval
+    var isCountdownEnabled: Bool
+    var countdownDuration: TimeInterval
+
+    static var appDefault: MeditationPreferences {
+        MeditationPreferences(
+            totalTime: defaultMeditationTime,
+            intervalInputMode: "count",
+            intervalCount: defaultIntervalCount,
+            intervalX: defaultMeditationTime / Double(defaultIntervalCount),
+            isCountdownEnabled: false,
+            countdownDuration: defaultCountdownDuration
+        )
+    }
+
+    static func load(from defaults: UserDefaults = .standard) -> MeditationPreferences {
+        var preferences = appDefault
+
+        if defaults.object(forKey: Key.totalTime) != nil {
+            preferences.totalTime = defaults.double(forKey: Key.totalTime)
+        }
+
+        if let mode = defaults.string(forKey: Key.intervalInputMode), mode == "time" || mode == "count" {
+            preferences.intervalInputMode = mode
+        }
+
+        if defaults.object(forKey: Key.intervalCount) != nil {
+            preferences.intervalCount = defaults.integer(forKey: Key.intervalCount)
+        }
+
+        if defaults.object(forKey: Key.intervalX) != nil {
+            preferences.intervalX = defaults.double(forKey: Key.intervalX)
+        }
+
+        if defaults.object(forKey: Key.isCountdownEnabled) != nil {
+            preferences.isCountdownEnabled = defaults.bool(forKey: Key.isCountdownEnabled)
+        }
+
+        if defaults.object(forKey: Key.countdownDuration) != nil {
+            preferences.countdownDuration = defaults.double(forKey: Key.countdownDuration)
+        }
+
+        return preferences.normalized()
+    }
+
+    func save(to defaults: UserDefaults = .standard) {
+        let preferences = normalized()
+        defaults.set(preferences.totalTime, forKey: Key.totalTime)
+        defaults.set(preferences.intervalInputMode, forKey: Key.intervalInputMode)
+        defaults.set(preferences.intervalCount, forKey: Key.intervalCount)
+        defaults.set(preferences.intervalX, forKey: Key.intervalX)
+        defaults.set(preferences.isCountdownEnabled, forKey: Key.isCountdownEnabled)
+        defaults.set(preferences.countdownDuration, forKey: Key.countdownDuration)
+    }
+
+    func normalized() -> MeditationPreferences {
+        let roundedMinutes = max(1, min(Int(maxMeditationTime / 60), Int(round(totalTime / 60))))
+        let normalizedTotal = TimeInterval(roundedMinutes * 60)
+        let normalizedMode = intervalInputMode == "time" ? "time" : "count"
+        let maxSectionCount = max(1, Int(normalizedTotal / 5))
+        let normalizedCountdown = max(3, min(maxCountdownDuration, countdownDuration))
+
+        if normalizedMode == "time" {
+            let intervalMinutes = max(1, Int(round(intervalX / 60)))
+            let normalizedInterval = min(normalizedTotal, TimeInterval(intervalMinutes * 60))
+            return MeditationPreferences(
+                totalTime: normalizedTotal,
+                intervalInputMode: normalizedMode,
+                intervalCount: max(1, Int(round(normalizedTotal / normalizedInterval))),
+                intervalX: normalizedInterval,
+                isCountdownEnabled: isCountdownEnabled,
+                countdownDuration: normalizedCountdown
+            )
+        }
+
+        let normalizedCount = min(maxSectionCount, max(1, intervalCount))
+        return MeditationPreferences(
+            totalTime: normalizedTotal,
+            intervalInputMode: normalizedMode,
+            intervalCount: normalizedCount,
+            intervalX: normalizedTotal / Double(normalizedCount),
+            isCountdownEnabled: isCountdownEnabled,
+            countdownDuration: normalizedCountdown
+        )
+    }
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -70,8 +172,8 @@ class BackgroundTimer: ObservableObject {
 
 struct MeditationAppView: View {
     // Session State
-    @State private var totalTime: TimeInterval = 20 * 60 // 20 mins default
-    @State private var timeLeft: TimeInterval = 20 * 60
+    @State private var totalTime: TimeInterval = defaultMeditationTime
+    @State private var timeLeft: TimeInterval = defaultMeditationTime
     @State private var isRunning = false
     
     // Absolute Time Tracking State for flawless background running
@@ -87,10 +189,10 @@ struct MeditationAppView: View {
     @State private var intervalX: TimeInterval = 10 * 60
     @State private var isCustomInterval = false
     @State private var intervalInputMode = "count" // Default is 'count'
-    @State private var intervalCount: Int = 2 // Persistent section count state
+    @State private var intervalCount: Int = defaultIntervalCount // Persistent section count state
     
     // Countdown State
-    @State private var isCountdownEnabled = true
+    @State private var isCountdownEnabled = false
     @State private var countdownDuration: TimeInterval = defaultCountdownDuration
     @State private var countdownActive = false
     @State private var countdownTimeLeft: TimeInterval = defaultCountdownDuration
@@ -115,6 +217,22 @@ struct MeditationAppView: View {
     
     // Background-safe dispatcher
     @StateObject private var bgTimer = BackgroundTimer()
+
+    init() {
+        let preferences = MeditationPreferences.load()
+        _totalTime = State(initialValue: preferences.totalTime)
+        _timeLeft = State(initialValue: preferences.totalTime)
+        _intervalX = State(initialValue: preferences.intervalX)
+        _intervalInputMode = State(initialValue: preferences.intervalInputMode)
+        _intervalCount = State(initialValue: preferences.intervalCount)
+        _isCountdownEnabled = State(initialValue: preferences.isCountdownEnabled)
+        _countdownDuration = State(initialValue: preferences.countdownDuration)
+        _countdownTimeLeft = State(initialValue: preferences.countdownDuration)
+        _totalMinsInput = State(initialValue: String(Int(preferences.totalTime) / 60))
+        _intervalMinsInput = State(initialValue: String(Int(preferences.intervalX) / 60))
+        _intervalCountInput = State(initialValue: String(preferences.intervalCount))
+        _countdownDurationInput = State(initialValue: String(Int(preferences.countdownDuration)))
+    }
     
     var body: some View {
         ZStack {
@@ -377,7 +495,13 @@ struct MeditationAppView: View {
 
                 Spacer()
 
-                Toggle("", isOn: $isCountdownEnabled)
+                Toggle("", isOn: Binding(get: { isCountdownEnabled }, set: { val in
+                    isCountdownEnabled = val
+                    if !countdownActive {
+                        countdownTimeLeft = countdownDuration
+                    }
+                    savePreferences()
+                }))
                     .labelsHidden()
                     .toggleStyle(SwitchToggleStyle(tint: Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0)))
             }
@@ -557,6 +681,7 @@ struct MeditationAppView: View {
                             isRunning = false
                             timeLeft = totalTime
                             syncAllInputs()
+                            savePreferences()
                         }), in: 60...max(60, totalTime), step: 60)
                         .accentColor(Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0))
                     } else {
@@ -579,7 +704,11 @@ struct MeditationAppView: View {
                     
                     Slider(value: Binding(get: { countdownDuration }, set: { val in
                         countdownDuration = val
+                        if !countdownActive {
+                            countdownTimeLeft = val
+                        }
                         syncAllInputs()
+                        savePreferences()
                     }), in: 5...60, step: 1)
                     .accentColor(Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0))
                 }
@@ -808,6 +937,17 @@ struct MeditationAppView: View {
         }
     }
 
+    private func savePreferences() {
+        MeditationPreferences(
+            totalTime: totalTime,
+            intervalInputMode: intervalInputMode,
+            intervalCount: intervalCount,
+            intervalX: intervalX,
+            isCountdownEnabled: isCountdownEnabled,
+            countdownDuration: countdownDuration
+        ).save()
+    }
+
     private func updateTotalTime(_ value: TimeInterval) {
         let capped = min(maxMeditationTime, max(60, value))
         totalTime = capped
@@ -833,6 +973,7 @@ struct MeditationAppView: View {
         silentPlayer?.stop()
         bgTimer.stop()
         syncAllInputs()
+        savePreferences()
     }
     
     private func toggleTimer() {
@@ -1017,11 +1158,15 @@ struct MeditationAppView: View {
         case "countdown":
             let val = Int(countdownDurationInput) ?? Int(defaultCountdownDuration)
             countdownDuration = max(3, min(maxCountdownDuration, TimeInterval(val)))
+            if !countdownActive {
+                countdownTimeLeft = countdownDuration
+            }
             syncAllInputs()
             
         default:
             break
         }
+        savePreferences()
     }
     
     private func adjustValue(type: String, up: Bool) {
@@ -1066,6 +1211,7 @@ struct MeditationAppView: View {
             }
         }
         syncAllInputs()
+        savePreferences()
     }
     
     private func syncAllInputs() {
