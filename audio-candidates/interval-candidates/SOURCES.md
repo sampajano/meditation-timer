@@ -14,8 +14,8 @@ For a final App Store release, prefer downloading the original AIFF from Freesou
 - Original download shown by Freesound: `390203__ganapataye__bells-05.aiff`
 - Local unedited preview: `previews-selected/ganapataye-390203-bells-05-hq.mp3`
 - App-ready file: `final/ganapataye-390203-interval-bell.mp3`
-- Tracked app asset replaced: `web/public/tingsha3.mp3`, which Xcode bundles into the iOS app as `public/tingsha3.mp3`.
-- Local ignored iOS copy synced for device testing: `ios/App/App/public/tingsha3.mp3`.
+- Tracked app asset added: `web/public/interval-bell.mp3`, which Xcode bundles into the iOS app as `public/interval-bell.mp3`.
+- Local ignored iOS copy synced for device testing: `ios/App/App/public/interval-bell.mp3`.
 - Processing notes:
   - Trimmed to 5.4 seconds so the interval bell is distinct and short enough for repeated use.
   - Added only tiny fades to avoid edit clicks or hard stops.

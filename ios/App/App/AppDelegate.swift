@@ -86,7 +86,7 @@ struct MeditationAppView: View {
     // Interval State
     @State private var intervalX: TimeInterval = 10 * 60
     @State private var isCustomInterval = false
-    @State private var intervalSound = "tingsha" // "bowl" or "tingsha"
+    @State private var intervalSound = "bell" // "bell" or "tingsha"
     @State private var intervalInputMode = "count" // Default is 'count'
     @State private var intervalCount: Int = 2 // Persistent section count state
     
@@ -112,6 +112,7 @@ struct MeditationAppView: View {
     
     // Audio Players
     @State private var startPlayer: AVAudioPlayer?
+    @State private var bellPlayer: AVAudioPlayer?
     @State private var tingshaPlayer: AVAudioPlayer?
     @State private var silentPlayer: AVAudioPlayer? // Looped silent audio to keep app executing in background
     @State private var endGongReplayWorkItem: DispatchWorkItem?
@@ -580,7 +581,7 @@ struct MeditationAppView: View {
                             intervalSound = val
                             playIntervalGong()
                         }),
-                        options: [("Bowl", "bowl"), ("Bell", "tingsha")]
+                        options: [("Bell", "bell"), ("Tingsha", "tingsha")]
                     )
                 }
                 
@@ -815,6 +816,10 @@ struct MeditationAppView: View {
         if let player = startPlayer, player.isPlaying {
             player.stop()
         }
+        if let player = bellPlayer, player.isPlaying {
+            player.stop()
+        }
+
         if let player = tingshaPlayer, player.isPlaying {
             player.stop()
         }
@@ -1136,7 +1141,13 @@ struct MeditationAppView: View {
             startPlayer?.prepareToPlay()
         }
         
-        if let tingshaPath = Bundle.main.path(forResource: "tingsha3", ofType: "mp3", inDirectory: "public") {
+        if let bellPath = Bundle.main.path(forResource: "interval-bell", ofType: "mp3", inDirectory: "public") {
+            let url = URL(fileURLWithPath: bellPath)
+            bellPlayer = try? AVAudioPlayer(contentsOf: url)
+            bellPlayer?.prepareToPlay()
+        }
+
+        if let tingshaPath = Bundle.main.path(forResource: "tingsha", ofType: "mp3", inDirectory: "public") {
             let url = URL(fileURLWithPath: tingshaPath)
             tingshaPlayer = try? AVAudioPlayer(contentsOf: url)
             tingshaPlayer?.prepareToPlay()
@@ -1163,17 +1174,17 @@ struct MeditationAppView: View {
     
     private func playIntervalGong() {
         triggerHaptic()
-        if intervalSound == "bowl" {
-            if let player = startPlayer {
+        if intervalSound == "tingsha" {
+            if let player = tingshaPlayer {
                 player.rate = 1.0
                 player.volume = 0.0
                 player.enableRate = true
                 player.currentTime = 0
                 player.play()
-                player.setVolume(0.8, fadeDuration: 0.04)
+                player.setVolume(0.48, fadeDuration: 0.02)
             }
         } else {
-            if let player = tingshaPlayer {
+            if let player = bellPlayer {
                 player.rate = 1.0
                 player.volume = 0.0
                 player.enableRate = true
