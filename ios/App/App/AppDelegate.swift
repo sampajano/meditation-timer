@@ -86,7 +86,6 @@ struct MeditationAppView: View {
     // Interval State
     @State private var intervalX: TimeInterval = 10 * 60
     @State private var isCustomInterval = false
-    @State private var intervalSound = "bell" // "bell" or "tingsha"
     @State private var intervalInputMode = "count" // Default is 'count'
     @State private var intervalCount: Int = 2 // Persistent section count state
     
@@ -103,7 +102,6 @@ struct MeditationAppView: View {
     // Text Inputs (synchronized with values on commit/blur)
     @State private var totalMinsInput = "20"
     @State private var intervalMinsInput = "10"
-    @State private var intervalSecsInput = "30"
     @State private var intervalCountInput = "2"
     @State private var countdownDurationInput = String(Int(defaultCountdownDuration))
     
@@ -113,7 +111,6 @@ struct MeditationAppView: View {
     // Audio Players
     @State private var startPlayer: AVAudioPlayer?
     @State private var bellPlayer: AVAudioPlayer?
-    @State private var tingshaPlayer: AVAudioPlayer?
     @State private var silentPlayer: AVAudioPlayer? // Looped silent audio to keep app executing in background
     @State private var endGongReplayWorkItem: DispatchWorkItem?
     
@@ -521,10 +518,14 @@ struct MeditationAppView: View {
             .padding(.horizontal, 24)
             
             VStack(spacing: 20) {
-                // Advanced bell behavior
+                // Interval bell behavior
                 VStack(alignment: .leading, spacing: 8) {
+                    Text("Interval bell")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(dhammaAntiqueGold)
+
                     HStack {
-                        Text("Bell spacing")
+                        Text("Spacing")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(dhammaAntiqueGold)
                         
@@ -546,20 +547,18 @@ struct MeditationAppView: View {
                                 .font(.system(size: 13))
                                 .foregroundColor(dhammaAntiqueGold.opacity(0.9))
                             Spacer()
-                            HStack(spacing: 4) {
-                                stepperTextField(value: $intervalMinsInput, suffix: "m", field: "intervalMins", increment: { adjustValue(type: "intervalMins", up: true) }, decrement: { adjustValue(type: "intervalMins", up: false) })
-                                stepperTextField(value: $intervalSecsInput, suffix: "s", field: "intervalSecs", increment: { adjustValue(type: "intervalSecs", up: true) }, decrement: { adjustValue(type: "intervalSecs", up: false) })
-                            }
+                            stepperTextField(value: $intervalMinsInput, suffix: "m", field: "intervalMins", increment: { adjustValue(type: "intervalMins", up: true) }, decrement: { adjustValue(type: "intervalMins", up: false) })
                         }
                         
-                        Slider(value: Binding(get: { min(intervalX, totalTime) }, set: { val in
-                            intervalX = val
-                            intervalCount = Int(round(totalTime / val))
+                        Slider(value: Binding(get: { clampedMinuteInterval(intervalX) }, set: { val in
+                            let rounded = clampedMinuteInterval(val)
+                            intervalX = rounded
+                            intervalCount = sectionCount(forTotal: totalTime, fixedInterval: rounded)
                             isCustomInterval = true
                             isRunning = false
                             timeLeft = totalTime
                             syncAllInputs()
-                        }), in: 5...max(5, totalTime), step: 5)
+                        }), in: 60...max(60, totalTime), step: 60)
                         .accentColor(Color(red: 212.0 / 255.0, green: 175.0 / 255.0, blue: 55.0 / 255.0))
                     } else {
                         Text(hasIntermediateBells ? "Sections are adjusted on the main screen. Current spacing: \(formatIntervalLengthText(intermediateBellSpacing))" : "1 section means end bell only.")
@@ -567,24 +566,6 @@ struct MeditationAppView: View {
                             .foregroundColor(dhammaAntiqueGold.opacity(0.78))
                     }
                 }
-                
-                // Sound Choice
-                HStack {
-                    Text("Bell sound:")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(dhammaAntiqueGold)
-                    
-                    Spacer()
-                    
-                    CustomSegmentedPicker(
-                        selection: Binding(get: { intervalSound }, set: { val in
-                            intervalSound = val
-                            playIntervalGong()
-                        }),
-                        options: [("Bell", "bell"), ("Tingsha", "tingsha")]
-                    )
-                }
-                
                 // Preparation length only; the on/off switch lives on the main screen.
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
@@ -701,10 +682,17 @@ struct MeditationAppView: View {
         return String(format: "%d:%02dm", mins, secs)
     }
 
+    private func clampedMinuteInterval(_ seconds: TimeInterval, total: TimeInterval? = nil) -> TimeInterval {
+        let limit = total ?? totalTime
+        let minutes = max(1, Int(round(seconds / 60)))
+        return min(limit, TimeInterval(minutes * 60))
+    }
+
     private var effectiveIntervalCount: Int {
         if intervalInputMode == "time" {
-            guard intervalX > 0 else { return 1 }
-            return max(1, Int(round(totalTime / intervalX)))
+            let interval = clampedMinuteInterval(intervalX)
+            guard interval > 0 else { return 1 }
+            return max(1, Int(round(totalTime / interval)))
         }
         return max(1, intervalCount)
     }
@@ -720,15 +708,16 @@ struct MeditationAppView: View {
 
     private var intermediateBellSpacing: TimeInterval {
         if intervalInputMode == "time" {
-            return max(5, min(totalTime, intervalX))
+            return clampedMinuteInterval(intervalX)
         }
         return totalTime / Double(max(1, effectiveIntervalCount))
     }
 
     private var intermediateBellCount: Int {
         if intervalInputMode == "time" {
-            guard intervalX > 0, intervalX < totalTime else { return 0 }
-            return max(0, Int(floor((totalTime - 0.001) / intervalX)))
+            let interval = clampedMinuteInterval(intervalX)
+            guard interval > 0, interval < totalTime else { return 0 }
+            return max(0, Int(floor((totalTime - 0.001) / interval)))
         }
         return max(0, effectiveIntervalCount - 1)
     }
@@ -819,10 +808,6 @@ struct MeditationAppView: View {
         if let player = bellPlayer, player.isPlaying {
             player.stop()
         }
-
-        if let player = tingshaPlayer, player.isPlaying {
-            player.stop()
-        }
     }
 
     private func updateTotalTime(_ value: TimeInterval) {
@@ -843,7 +828,7 @@ struct MeditationAppView: View {
             intervalCount = min(max(1, intervalCount), maxIntervalSectionCount)
             intervalX = capped / Double(intervalCount)
         } else {
-            intervalX = max(5, intervalX)
+            intervalX = clampedMinuteInterval(intervalX, total: capped)
             intervalCount = sectionCount(forTotal: capped, fixedInterval: intervalX)
         }
 
@@ -1015,19 +1000,18 @@ struct MeditationAppView: View {
                     intervalCount = min(max(1, intervalCount), maxIntervalSectionCount)
                     intervalX = capped / Double(intervalCount)
                 } else {
-                    intervalX = max(5, intervalX)
+                    intervalX = clampedMinuteInterval(intervalX, total: capped)
                     intervalCount = sectionCount(forTotal: capped, fixedInterval: intervalX)
                 }
             }
             syncAllInputs()
             
-        case "intervalMins", "intervalSecs":
-            let mins = Int(intervalMinsInput) ?? 0
-            let secs = min(59, Int(intervalSecsInput) ?? 0)
-            let newInterval = TimeInterval(mins * 60 + secs)
-            if newInterval >= 5 && newInterval <= totalTime {
+        case "intervalMins":
+            let mins = max(1, Int(intervalMinsInput) ?? 1)
+            let newInterval = TimeInterval(mins * 60)
+            if newInterval <= totalTime {
                 intervalX = newInterval
-                intervalCount = Int(round(totalTime / newInterval))
+                intervalCount = sectionCount(forTotal: totalTime, fixedInterval: newInterval)
                 isCustomInterval = true
                 isRunning = false
                 timeLeft = totalTime
@@ -1064,15 +1048,9 @@ struct MeditationAppView: View {
             commitField("totalMins")
         case "intervalMins":
             let current = Int(intervalMinsInput) ?? 0
-            intervalMinsInput = String(max(0, current + (up ? 1 : -1)))
+            let maxMinutes = max(1, Int(totalTime / 60))
+            intervalMinsInput = String(min(maxMinutes, max(1, current + (up ? 1 : -1))))
             commitField("intervalMins")
-        case "intervalSecs":
-            let current = Int(intervalSecsInput) ?? 0
-            let diff = up ? 5 : -5
-            var next = (current + diff) % 60
-            if next < 0 { next += 60 }
-            intervalSecsInput = String(format: "%02d", next)
-            commitField("intervalSecs")
         case "intervalCount":
             let current = intervalCount
             intervalCountInput = String(min(maxIntervalSectionCount, max(1, current + (up ? 1 : -1))))
@@ -1088,7 +1066,7 @@ struct MeditationAppView: View {
     
     private func handleIntervalModeChange() {
         if intervalInputMode == "time" {
-            let rounded = max(5, round(intervalX))
+            let rounded = clampedMinuteInterval(intervalX)
             intervalX = rounded
             intervalCount = sectionCount(forTotal: totalTime, fixedInterval: rounded)
             isCustomInterval = true
@@ -1112,13 +1090,12 @@ struct MeditationAppView: View {
         totalMinsInput = String(tm)
         
         // sync interval time inputs
-        let im = Int(intervalX) / 60
-        let isSec = Int(round(intervalX.truncatingRemainder(dividingBy: 60)))
+        let im = Int(clampedMinuteInterval(intervalX)) / 60
         intervalMinsInput = String(im)
-        intervalSecsInput = String(format: "%02d", isSec)
         
         // sync count input
-        let count = intervalInputMode == "count" ? min(intervalCount, maxIntervalSectionCount) : (intervalX > 0 ? Int(round(totalTime / intervalX)) : 2)
+        let fixedInterval = clampedMinuteInterval(intervalX)
+        let count = intervalInputMode == "count" ? min(intervalCount, maxIntervalSectionCount) : (fixedInterval > 0 ? Int(round(totalTime / fixedInterval)) : 2)
         intervalCountInput = String(count)
         
         // sync countdown
@@ -1145,12 +1122,6 @@ struct MeditationAppView: View {
             let url = URL(fileURLWithPath: bellPath)
             bellPlayer = try? AVAudioPlayer(contentsOf: url)
             bellPlayer?.prepareToPlay()
-        }
-
-        if let tingshaPath = Bundle.main.path(forResource: "tingsha", ofType: "mp3", inDirectory: "public") {
-            let url = URL(fileURLWithPath: tingshaPath)
-            tingshaPlayer = try? AVAudioPlayer(contentsOf: url)
-            tingshaPlayer?.prepareToPlay()
             
             // Set up inaudible silent background looper
             silentPlayer = try? AVAudioPlayer(contentsOf: url)
@@ -1174,24 +1145,13 @@ struct MeditationAppView: View {
     
     private func playIntervalGong() {
         triggerHaptic()
-        if intervalSound == "tingsha" {
-            if let player = tingshaPlayer {
-                player.rate = 1.0
-                player.volume = 0.0
-                player.enableRate = true
-                player.currentTime = 0
-                player.play()
-                player.setVolume(0.48, fadeDuration: 0.02)
-            }
-        } else {
-            if let player = bellPlayer {
-                player.rate = 1.0
-                player.volume = 0.0
-                player.enableRate = true
-                player.currentTime = 0
-                player.play()
-                player.setVolume(0.55, fadeDuration: 0.02)
-            }
+        if let player = bellPlayer {
+            player.rate = 1.0
+            player.volume = 0.0
+            player.enableRate = true
+            player.currentTime = 0
+            player.play()
+            player.setVolume(0.55, fadeDuration: 0.02)
         }
     }
     
