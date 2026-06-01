@@ -24,10 +24,10 @@ For a final App Store release, prefer downloading the original WAV/FLAC files fr
 - Local ignored iOS copy synced for device testing: `ios/App/App/public/start.mp3`.
 - Processing notes:
   - Started from the public HQ preview MP3 while keeping the original preview in `candidates/`.
-  - Trimmed to the manually selected 14.65s start point to remove lead silence while preserving the audible bowl strike.
+  - The original preview is 1:25.62 long. Trimmed to the manually selected 14.65s start point, leaving about 70.97 seconds of usable bowl sound after the strike.
   - Added only a micro fade-in at the start to avoid an edit click while preserving the bowl hit.
-  - Added loudness normalization for app use.
-  - Length: 30 seconds. Because the original bowl tail is much longer, the app-ready export uses a gradual 15-second protective fade at the artificial cut point to avoid a hard stop.
+  - Exported a 60-second app-ready file, with the natural bowl tail preserved through 30 seconds and a gradual fade-out from 30s to 60s.
+  - Lowered the file gain by 3.4 dB so the longer export keeps a peak level close to the previous app bell and does not become louder than expected.
 
 ## Unedited Additional Candidates
 

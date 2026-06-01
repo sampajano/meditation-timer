@@ -112,7 +112,6 @@ struct MeditationAppView: View {
     @State private var startPlayer: AVAudioPlayer?
     @State private var bellPlayer: AVAudioPlayer?
     @State private var silentPlayer: AVAudioPlayer? // Looped silent audio to keep app executing in background
-    @State private var endGongReplayWorkItem: DispatchWorkItem?
     
     // Background-safe dispatcher
     @StateObject private var bgTimer = BackgroundTimer()
@@ -801,7 +800,6 @@ struct MeditationAppView: View {
     }
     
     private func stopAllGongs() {
-        cancelPendingEndGongReplay()
         if let player = startPlayer, player.isPlaying {
             player.stop()
         }
@@ -970,20 +968,6 @@ struct MeditationAppView: View {
         lastProcessedSecond = currentSecond
     }
 
-    private func cancelPendingEndGongReplay() {
-        endGongReplayWorkItem?.cancel()
-        endGongReplayWorkItem = nil
-    }
-
-    private func endGongReplayDelay() -> TimeInterval {
-        guard let player = startPlayer else {
-            return 4.0
-        }
-
-        let rate = max(0.1, Double(player.rate))
-        return max(1.5, player.duration / rate + 0.25)
-    }
-    
     // Direct inputs committing
     private func commitField(_ field: String) {
         switch field {
@@ -1156,14 +1140,7 @@ struct MeditationAppView: View {
     }
     
     private func playEndGong() {
-        cancelPendingEndGongReplay()
         playGong()
-        let replay = DispatchWorkItem {
-            self.playGong()
-            self.endGongReplayWorkItem = nil
-        }
-        endGongReplayWorkItem = replay
-        DispatchQueue.main.asyncAfter(deadline: .now() + endGongReplayDelay(), execute: replay)
     }
     
     private func triggerHaptic() {
