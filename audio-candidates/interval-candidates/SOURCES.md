@@ -1,22 +1,22 @@
 # Interval Bell Source
 
-This folder documents the selected interval bell source for the app. The Freesound page was checked on 2026-05-31 and showed Creative Commons 0.
+This folder documents the final selected interval bell source for the app. The Freesound page was checked on 2026-05-31 and showed Creative Commons 0.
 
-For a final App Store release, prefer downloading the original AIFF from Freesound while logged in, then rerun the same trim/mastering step. The file under `previews-selected/` is the public HQ preview MP3 from Freesound's CDN.
+For a final App Store release, prefer downloading the original FLAC from Freesound while logged in, then rerun the same trim/mastering step. The file kept under `../../candidates/` is the public HQ preview MP3 from Freesound's CDN.
 
 ## Selected Interval Bell
 
-### BELLS 05
+### singing bowl - single strike 7
 
-- Author: ganapataye
-- Source: https://freesound.org/people/ganapataye/sounds/390203/
+- Author: s-light
+- Source: https://freesound.org/people/s-light/sounds/411485/
 - License: Creative Commons 0
-- Original download shown by Freesound: `390203__ganapataye__bells-05.aiff`
-- Local unedited preview: `previews-selected/ganapataye-390203-bells-05-hq.mp3`
-- App-ready file: `final/ganapataye-390203-interval-bell.mp3`
-- Tracked app asset added: `web/public/interval-bell.mp3`, which Xcode bundles into the iOS app as `public/interval-bell.mp3`.
+- Original download shown by Freesound: `411485__s-light__singing-bowl-single-strike-7.flac`
+- Local unedited preview: `../candidates/s-light-411485-single-strike-7-bright-hq.mp3`
+- App-ready file: `final/s-light-411485-interval-bell.mp3`
+- Tracked app asset updated: `web/public/interval-bell.mp3`, which Xcode bundles into the iOS app as `public/interval-bell.mp3`.
 - Local ignored iOS copy synced for device testing: `ios/App/App/public/interval-bell.mp3`.
 - Processing notes:
-  - Trimmed to 5.4 seconds so the interval bell is distinct and short enough for repeated use.
-  - Added only tiny fades to avoid edit clicks or hard stops.
-  - Normalized quieter than the main start/end bell so interval bells feel supportive rather than dominant.
+  - Trimmed off the tiny lead silence, then exported a 20-second interval bell.
+  - Applied a fade-out from the beginning so the bell fully disappears by 20 seconds.
+  - Lowered the file gain by 5.8 dB, then the app plays it at 0.65 volume so it stays below the main start/end bell.

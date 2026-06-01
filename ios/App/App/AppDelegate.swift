@@ -1151,7 +1151,7 @@ struct MeditationAppView: View {
             player.enableRate = true
             player.currentTime = 0
             player.play()
-            player.setVolume(0.55, fadeDuration: 0.02)
+            player.setVolume(0.65, fadeDuration: 0.02)
         }
     }
     
