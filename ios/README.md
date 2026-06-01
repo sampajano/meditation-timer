@@ -18,7 +18,8 @@ npm run ios:open
 
 - `ios/App/App/AppDelegate.swift` is the native app entry point and contains the SwiftUI timer UI.
 - `ios/App/App/Info.plist` enables the iOS `audio` background mode.
-- `web/public/` contains shared static assets used by the iOS bundle.
+- `shared/audio/` contains the app bell audio bundled into iOS and imported by the web app.
+- `web/public/` contains web static assets and legacy image assets still bundled for the native iOS background.
 - `web/` contains a separate React + Vite web implementation.
 
 The iOS app does not run the React app in a WebView. The main iPhone UI is native SwiftUI hosted through `UIHostingController`.

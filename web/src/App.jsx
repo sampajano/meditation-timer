@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import TimerDisplay from './TimerDisplay';
+import startBellUrl from '../../shared/audio/start.mp3?url';
+import intervalBellUrl from '../../shared/audio/interval-bell.mp3?url';
 
 // Persistent Web Audio variables to prevent garbage collection and reload across renders
 let audioCtx = null;
 let startBuffer = null;
-let tingshaBuffer = null;
+let intervalBellBuffer = null;
 let activeSources = [];
 
 function App() {
@@ -112,23 +114,23 @@ function App() {
         }
 
         if (!startBuffer) {
-          const startRes = await fetch('/start.mp3');
+          const startRes = await fetch(startBellUrl);
           const startArrayBuffer = await startRes.arrayBuffer();
           audioCtx.decodeAudioData(startArrayBuffer)
             .then(decoded => {
               startBuffer = decoded;
             })
-            .catch(err => console.error("Error decoding start.mp3", err));
+            .catch(err => console.error("Error decoding shared start bell", err));
         }
 
-        if (!tingshaBuffer) {
-          const tingshaRes = await fetch('/tingsha3.mp3');
-          const tingshaArrayBuffer = await tingshaRes.arrayBuffer();
-          audioCtx.decodeAudioData(tingshaArrayBuffer)
+        if (!intervalBellBuffer) {
+          const intervalBellRes = await fetch(intervalBellUrl);
+          const intervalBellArrayBuffer = await intervalBellRes.arrayBuffer();
+          audioCtx.decodeAudioData(intervalBellArrayBuffer)
             .then(decoded => {
-              tingshaBuffer = decoded;
+              intervalBellBuffer = decoded;
             })
-            .catch(err => console.error("Error decoding tingsha3.mp3", err));
+            .catch(err => console.error("Error decoding shared interval bell", err));
         }
       } catch (e) {
         console.warn("Failed to initialize Web Audio engine at startup:", e);
@@ -152,7 +154,7 @@ function App() {
 
       if (!buffer) {
         console.warn("Audio buffer not loaded yet. Falling back to HTML5 Audio.");
-        const audioPath = isBowl ? '/start.mp3' : '/tingsha3.mp3';
+        const audioPath = isBowl ? startBellUrl : intervalBellUrl;
         const fallbackAudio = new Audio(audioPath);
         fallbackAudio.playbackRate = rate;
         fallbackAudio.volume = 0.0;
@@ -202,7 +204,7 @@ function App() {
 
   // Play the calm, natural accent chime at interval marks (supports custom selections)
   const playIntervalGong = (soundType = intervalSound) => {
-    const buffer = soundType === 'bowl' ? startBuffer : tingshaBuffer;
+    const buffer = soundType === 'bowl' ? startBuffer : intervalBellBuffer;
     const rate = soundType === 'bowl' ? 0.6 : 0.85;
     const volume = soundType === 'bowl' ? 2.0 : 1.4;
     playBuffer(buffer, rate, volume, soundType === 'bowl');

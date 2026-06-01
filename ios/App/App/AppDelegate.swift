@@ -1242,13 +1242,13 @@ struct MeditationAppView: View {
             print("Failed to initialize AVAudioSession: \(error)")
         }
         
-        if let startPath = Bundle.main.path(forResource: "start", ofType: "mp3", inDirectory: "public") {
+        if let startPath = Bundle.main.path(forResource: "start", ofType: "mp3", inDirectory: "audio") {
             let url = URL(fileURLWithPath: startPath)
             startPlayer = try? AVAudioPlayer(contentsOf: url)
             startPlayer?.prepareToPlay()
         }
         
-        if let bellPath = Bundle.main.path(forResource: "interval-bell", ofType: "mp3", inDirectory: "public") {
+        if let bellPath = Bundle.main.path(forResource: "interval-bell", ofType: "mp3", inDirectory: "audio") {
             let url = URL(fileURLWithPath: bellPath)
             bellPlayer = try? AVAudioPlayer(contentsOf: url)
             bellPlayer?.prepareToPlay()

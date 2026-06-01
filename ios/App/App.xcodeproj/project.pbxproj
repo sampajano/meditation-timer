@@ -12,6 +12,7 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50C000021FEDC1A000F3C39B /* TimerBellLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */; };
 		50B271D11FEDC1A000F3C39B /* web-public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* web-public */; };
+		50B271D31FEDC1A000F3C39B /* shared-audio in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D21FEDC1A000F3C39B /* shared-audio */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* web-public */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "web-public"; path = ../../web/public; sourceTree = SOURCE_ROOT; };
+		50B271D21FEDC1A000F3C39B /* shared-audio */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "shared-audio"; path = ../../shared/audio; sourceTree = SOURCE_ROOT; };
 		50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerBellLogic.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -41,6 +43,7 @@
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
 				50B271D01FEDC1A000F3C39B /* web-public */,
+				50B271D21FEDC1A000F3C39B /* shared-audio */,
 			);
 			sourceTree = "<group>";
 		};
@@ -129,6 +132,7 @@
 			files = (
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* web-public in Resources */,
+				50B271D31FEDC1A000F3C39B /* shared-audio in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
