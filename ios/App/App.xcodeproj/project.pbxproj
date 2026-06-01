@@ -13,7 +13,37 @@
 		50C000021FEDC1A000F3C39B /* TimerBellLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */; };
 		50B271D11FEDC1A000F3C39B /* web-public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* web-public */; };
 		50B271D31FEDC1A000F3C39B /* shared-audio in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D21FEDC1A000F3C39B /* shared-audio */; };
-/* End PBXBuildFile section */
+		50D000021FEDC1A000F3C39B /* MeditationLiveActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D000011FEDC1A000F3C39B /* MeditationLiveActivityController.swift */; };
+		50D000041FEDC1A000F3C39B /* MeditationLiveActivityLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D000031FEDC1A000F3C39B /* MeditationLiveActivityLogic.swift */; };
+		50D000061FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D000051FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift */; };
+		50E000021FEDC1A000F3C39B /* MeditationLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E000011FEDC1A000F3C39B /* MeditationLiveActivityWidget.swift */; };
+		50E000031FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D000051FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift */; };
+		50E000041FEDC1A000F3C39B /* MeditationLiveActivityExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 50E000051FEDC1A000F3C39B /* MeditationLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+	/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		50E000061FEDC1A000F3C39B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 50E000071FEDC1A000F3C39B;
+			remoteInfo = MeditationLiveActivityExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		50E000081FEDC1A000F3C39B /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				50E000041FEDC1A000F3C39B /* MeditationLiveActivityExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -24,7 +54,13 @@
 		50B271D01FEDC1A000F3C39B /* web-public */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "web-public"; path = ../../web/public; sourceTree = SOURCE_ROOT; };
 		50B271D21FEDC1A000F3C39B /* shared-audio */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "shared-audio"; path = ../../shared/audio; sourceTree = SOURCE_ROOT; };
 		50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerBellLogic.swift; sourceTree = "<group>"; };
-/* End PBXFileReference section */
+		50D000011FEDC1A000F3C39B /* MeditationLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationLiveActivityController.swift; sourceTree = "<group>"; };
+		50D000031FEDC1A000F3C39B /* MeditationLiveActivityLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationLiveActivityLogic.swift; sourceTree = "<group>"; };
+		50D000051FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationTimerActivityAttributes.swift; sourceTree = "<group>"; };
+		50E000011FEDC1A000F3C39B /* MeditationLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationLiveActivityWidget.swift; sourceTree = "<group>"; };
+		50E000051FEDC1A000F3C39B /* MeditationLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeditationLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		50E000091FEDC1A000F3C39B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+	/* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		504EC3011FED79650016851F /* Frameworks */ = {
@@ -34,54 +70,77 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXFrameworksBuildPhase section */
+		50E0000A1FEDC1A000F3C39B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+	/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
-			children = (
-				504EC3061FED79650016851F /* App */,
-				504EC3051FED79650016851F /* Products */,
-				50B271D01FEDC1A000F3C39B /* web-public */,
-				50B271D21FEDC1A000F3C39B /* shared-audio */,
+					children = (
+						504EC3061FED79650016851F /* App */,
+						50E0000B1FEDC1A000F3C39B /* MeditationLiveActivityExtension */,
+						504EC3051FED79650016851F /* Products */,
+						50B271D01FEDC1A000F3C39B /* web-public */,
+						50B271D21FEDC1A000F3C39B /* shared-audio */,
 			);
 			sourceTree = "<group>";
 		};
 		504EC3051FED79650016851F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				504EC3041FED79650016851F /* App.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
+				isa = PBXGroup;
+				children = (
+					504EC3041FED79650016851F /* App.app */,
+					50E000051FEDC1A000F3C39B /* MeditationLiveActivityExtension.appex */,
+				);
+				name = Products;
+				sourceTree = "<group>";
 		};
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				50C000011FEDC1A000F3C39B /* TimerBellLogic.swift */,
+				50D000011FEDC1A000F3C39B /* MeditationLiveActivityController.swift */,
+				50D000031FEDC1A000F3C39B /* MeditationLiveActivityLogic.swift */,
+				50D000051FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
 			);
-			path = App;
+				path = App;
+				sourceTree = "<group>";
+			};
+		50E0000B1FEDC1A000F3C39B /* MeditationLiveActivityExtension */ = {
+			isa = PBXGroup;
+			children = (
+				50E000011FEDC1A000F3C39B /* MeditationLiveActivityWidget.swift */,
+				50E000091FEDC1A000F3C39B /* Info.plist */,
+			);
+			path = MeditationLiveActivityExtension;
 			sourceTree = "<group>";
 		};
-/* End PBXGroup section */
+	/* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		504EC3031FED79650016851F /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
-			buildPhases = (
-				504EC3001FED79650016851F /* Sources */,
-				504EC3011FED79650016851F /* Frameworks */,
-				504EC3021FED79650016851F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
+				buildPhases = (
+					504EC3001FED79650016851F /* Sources */,
+					504EC3011FED79650016851F /* Frameworks */,
+					504EC3021FED79650016851F /* Resources */,
+					50E000081FEDC1A000F3C39B /* Embed App Extensions */,
+				);
+				buildRules = (
+				);
+				dependencies = (
+					50E0000C1FEDC1A000F3C39B /* PBXTargetDependency */,
+				);
 			name = App;
 			packageProductDependencies = (
 			);
@@ -89,7 +148,26 @@
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
 		};
-/* End PBXNativeTarget section */
+		50E000071FEDC1A000F3C39B /* MeditationLiveActivityExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 50E0000D1FEDC1A000F3C39B /* Build configuration list for PBXNativeTarget "MeditationLiveActivityExtension" */;
+			buildPhases = (
+				50E0000E1FEDC1A000F3C39B /* Sources */,
+				50E0000A1FEDC1A000F3C39B /* Frameworks */,
+				50E0000F1FEDC1A000F3C39B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MeditationLiveActivityExtension;
+			packageProductDependencies = (
+			);
+			productName = MeditationLiveActivityExtension;
+			productReference = 50E000051FEDC1A000F3C39B /* MeditationLiveActivityExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+	/* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		504EC2FC1FED79650016851F /* Project object */ = {
@@ -101,6 +179,10 @@
 					504EC3031FED79650016851F = {
 						CreatedOnToolsVersion = 9.2;
 						LastSwiftMigration = 1100;
+						ProvisioningStyle = Automatic;
+					};
+					50E000071FEDC1A000F3C39B = {
+						CreatedOnToolsVersion = 16.0;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -119,17 +201,18 @@
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (
-				504EC3031FED79650016851F /* App */,
-			);
-		};
-/* End PBXProject section */
+				targets = (
+					504EC3031FED79650016851F /* App */,
+					50E000071FEDC1A000F3C39B /* MeditationLiveActivityExtension */,
+				);
+			};
+	/* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		504EC3021FED79650016851F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (
+					files = (
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* web-public in Resources */,
 				50B271D31FEDC1A000F3C39B /* shared-audio in Resources */,
@@ -137,7 +220,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXResourcesBuildPhase section */
+		50E0000F1FEDC1A000F3C39B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+	/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		504EC3001FED79650016851F /* Sources */ = {
@@ -146,10 +236,30 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				50C000021FEDC1A000F3C39B /* TimerBellLogic.swift in Sources */,
+				50D000021FEDC1A000F3C39B /* MeditationLiveActivityController.swift in Sources */,
+				50D000041FEDC1A000F3C39B /* MeditationLiveActivityLogic.swift in Sources */,
+				50D000061FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift in Sources */,
+				);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		50E0000E1FEDC1A000F3C39B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				50E000021FEDC1A000F3C39B /* MeditationLiveActivityWidget.swift in Sources */,
+				50E000031FEDC1A000F3C39B /* MeditationTimerActivityAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXSourcesBuildPhase section */
+	/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		50E0000C1FEDC1A000F3C39B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 50E000071FEDC1A000F3C39B /* MeditationLiveActivityExtension */;
+			targetProxy = 50E000061FEDC1A000F3C39B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC3101FED79650016851F /* LaunchScreen.storyboard */ = {
@@ -315,7 +425,59 @@
 			};
 			name = Release;
 		};
-/* End XCBuildConfiguration section */
+		50E000101FEDC1A000F3C39B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FNCD73V9FH;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MeditationLiveActivityExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lukex.goldenmeditation.MeditationLiveActivityExtension;
+				PRODUCT_BUNDLE_PACKAGE_TYPE = "XPC!";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		50E000111FEDC1A000F3C39B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FNCD73V9FH;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MeditationLiveActivityExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lukex.goldenmeditation.MeditationLiveActivityExtension;
+				PRODUCT_BUNDLE_PACKAGE_TYPE = "XPC!";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+	/* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		504EC2FF1FED79650016851F /* Build configuration list for PBXProject "App" */ = {
@@ -336,7 +498,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-/* End XCConfigurationList section */
+		50E0000D1FEDC1A000F3C39B /* Build configuration list for PBXNativeTarget "MeditationLiveActivityExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				50E000101FEDC1A000F3C39B /* Debug */,
+				50E000111FEDC1A000F3C39B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+	/* End XCConfigurationList section */
 
 	};
 	rootObject = 504EC2FC1FED79650016851F /* Project object */;

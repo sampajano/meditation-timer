@@ -7,6 +7,8 @@ private let defaultMeditationTime: TimeInterval = 20 * 60
 private let defaultCountdownDuration: TimeInterval = 15
 private let maxCountdownDuration: TimeInterval = 60
 private let defaultIntervalCount = 2
+private let startGongVolume: Float = 0.8
+private let intervalGongVolume: Float = 0.20
 
 private struct MeditationPreferences {
     private enum Key {
@@ -281,6 +283,10 @@ struct MeditationAppView: View {
         .onAppear {
             loadAudioEngine()
             syncAllInputs()
+            syncMeditationLiveActivityForCurrentSession()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            syncMeditationLiveActivityForCurrentSession()
         }
     }
     
@@ -909,6 +915,11 @@ struct MeditationAppView: View {
         return "Next bell in \(formatBellCountdownText(remaining))"
     }
 
+    private var liveActivityNextBellRemaining: TimeInterval? {
+        guard hasIntermediateBells else { return nil }
+        return overtimeActive ? nextOvertimeBellRemaining : nextIntermediateBellRemaining
+    }
+
     private func formatBellCountdownText(_ seconds: TimeInterval) -> String {
         TimerBellLogic.formatBellCountdownText(seconds)
     }
@@ -972,6 +983,7 @@ struct MeditationAppView: View {
 
         silentPlayer?.stop()
         bgTimer.stop()
+        endMeditationLiveActivity()
         syncAllInputs()
         savePreferences()
     }
@@ -983,16 +995,21 @@ struct MeditationAppView: View {
             showSettings = false
             if overtimeActive {
                 overtimeStartTime = Date()
+                resumeOvertimeLiveActivity(elapsed: overtimeElapsed)
             } else if timeLeft == totalTime && !countdownActive {
                 if isCountdownEnabled {
                     countdownActive = true
                     countdownTimeLeft = countdownDuration
                 } else {
                     playGong()
+                    startMeditationLiveActivity(remaining: timeLeft)
                 }
                 sessionStartTime = Date()
             } else {
                 sessionStartTime = Date()
+                if !countdownActive && !overtimeActive {
+                    resumeMeditationLiveActivity(remaining: timeLeft)
+                }
             }
             isRunning = true
             
@@ -1009,8 +1026,13 @@ struct MeditationAppView: View {
             if overtimeActive, let start = overtimeStartTime {
                 overtimeAccumulated += Date().timeIntervalSince(start)
                 overtimeElapsed = overtimeAccumulated
+                pauseMeditationLiveActivity(remaining: 0, overtimeElapsed: overtimeElapsed)
             } else if let start = sessionStartTime {
                 accumulatedElapsed += Date().timeIntervalSince(start)
+                if !countdownActive {
+                    timeLeft = max(0, totalTime - accumulatedElapsed)
+                    pauseMeditationLiveActivity(remaining: timeLeft, overtimeElapsed: nil)
+                }
             }
             sessionStartTime = nil
             overtimeStartTime = nil
@@ -1042,6 +1064,7 @@ struct MeditationAppView: View {
         // Stop background timers
         silentPlayer?.stop()
         bgTimer.stop()
+        endMeditationLiveActivity()
     }
     
     private func timerTick() {
@@ -1054,6 +1077,7 @@ struct MeditationAppView: View {
                 sessionStartTime = Date()
                 accumulatedElapsed = 0
                 lastProcessedSecond = 0
+                startMeditationLiveActivity(remaining: totalTime)
             } else {
                 countdownTimeLeft -= 1
             }
@@ -1064,6 +1088,7 @@ struct MeditationAppView: View {
                 }
                 playOvertimeIntermediateBellIfNeeded(currentSecond: TimerBellLogic.elapsedSecondForBellProcessing(overtimeElapsed))
                 timeLeft = 0
+                updateOvertimeLiveActivity(elapsed: overtimeElapsed)
                 return
             }
 
@@ -1071,6 +1096,7 @@ struct MeditationAppView: View {
             let totalElapsed = accumulatedElapsed + Date().timeIntervalSince(start)
             let newTimeLeft = max(0, totalTime - totalElapsed)
             timeLeft = newTimeLeft
+            updateRunningLiveActivity(remaining: timeLeft)
             
             let currentSecond = Int(totalElapsed)
             if currentSecond > lastProcessedSecond {
@@ -1093,6 +1119,7 @@ struct MeditationAppView: View {
                 sessionStartTime = nil
                 accumulatedElapsed = 0
                 lastProcessedSecond = 0
+                startOvertimeLiveActivity(elapsed: overtimeElapsed)
             }
         }
     }
@@ -1107,6 +1134,112 @@ struct MeditationAppView: View {
             }
         }
         lastProcessedSecond = currentSecond
+    }
+
+    private func startMeditationLiveActivity(remaining: TimeInterval) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.start(
+                totalDuration: totalTime,
+                remaining: remaining,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func resumeMeditationLiveActivity(remaining: TimeInterval) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.syncRunning(
+                totalDuration: totalTime,
+                remaining: remaining,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func updateRunningLiveActivity(remaining: TimeInterval) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.updateRunning(
+                remaining: remaining,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func startOvertimeLiveActivity(elapsed: TimeInterval) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.startOvertime(
+                totalDuration: totalTime,
+                overtimeElapsed: elapsed,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func resumeOvertimeLiveActivity(elapsed: TimeInterval) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.syncOvertime(
+                totalDuration: totalTime,
+                overtimeElapsed: elapsed,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func updateOvertimeLiveActivity(elapsed: TimeInterval) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.updateOvertime(
+                overtimeElapsed: elapsed,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func pauseMeditationLiveActivity(remaining: TimeInterval, overtimeElapsed: TimeInterval?) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.syncPaused(
+                totalDuration: totalTime,
+                remaining: remaining,
+                overtimeElapsed: overtimeElapsed,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func syncMeditationLiveActivityForCurrentSession() {
+        guard MeditationLiveActivityLogic.shouldSyncOnForeground(isSessionActive: isSessionActive, countdownActive: countdownActive) else {
+            return
+        }
+
+        if overtimeActive {
+            if isRunning {
+                syncOvertimeLiveActivity(elapsed: overtimeElapsed)
+            } else {
+                pauseMeditationLiveActivity(remaining: 0, overtimeElapsed: overtimeElapsed)
+            }
+            return
+        }
+
+        if isRunning {
+            resumeMeditationLiveActivity(remaining: timeLeft)
+        } else {
+            pauseMeditationLiveActivity(remaining: timeLeft, overtimeElapsed: nil)
+        }
+    }
+
+    private func syncOvertimeLiveActivity(elapsed: TimeInterval) {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.syncOvertime(
+                totalDuration: totalTime,
+                overtimeElapsed: elapsed,
+                nextBellRemaining: liveActivityNextBellRemaining
+            )
+        }
+    }
+
+    private func endMeditationLiveActivity() {
+        if #available(iOS 16.1, *) {
+            MeditationLiveActivityController.shared.end()
+        }
     }
 
     // Direct inputs committing
@@ -1269,7 +1402,7 @@ struct MeditationAppView: View {
             player.enableRate = true
             player.currentTime = 0
             player.play()
-            player.setVolume(0.8, fadeDuration: 0.04)
+            player.setVolume(startGongVolume, fadeDuration: 0.04)
         }
     }
     
@@ -1281,7 +1414,7 @@ struct MeditationAppView: View {
             player.enableRate = true
             player.currentTime = 0
             player.play()
-            player.setVolume(0.65, fadeDuration: 0.02)
+            player.setVolume(intervalGongVolume, fadeDuration: 0.04)
         }
     }
     
