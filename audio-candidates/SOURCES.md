@@ -27,7 +27,7 @@ For a final App Store release, prefer downloading the original WAV/FLAC files fr
   - Trimmed to the manually selected 14.65s start point to remove lead silence while preserving the audible bowl strike.
   - Added only a micro fade-in at the start to avoid an edit click while preserving the bowl hit.
   - Added loudness normalization for app use.
-  - Length: 30 seconds. Because the original bowl tail is much longer, the app-ready export uses a short protective fade only at the artificial cut point to avoid a hard stop.
+  - Length: 30 seconds. Because the original bowl tail is much longer, the app-ready export uses a gradual 15-second protective fade at the artificial cut point to avoid a hard stop.
 
 ## Unedited Additional Candidates
 

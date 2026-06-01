@@ -580,7 +580,7 @@ struct MeditationAppView: View {
                             intervalSound = val
                             playIntervalGong()
                         }),
-                        options: [("Bowl", "bowl"), ("Tingsha", "tingsha")]
+                        options: [("Bowl", "bowl"), ("Bell", "tingsha")]
                     )
                 }
                 
@@ -1174,12 +1174,12 @@ struct MeditationAppView: View {
             }
         } else {
             if let player = tingshaPlayer {
-                player.rate = 0.85 // Pitch-down Tingsha slightly for a calmer, softer background chime
-                player.volume = 0.0 // Start at 0 volume to suppress the harsh mallet hit
+                player.rate = 1.0
+                player.volume = 0.0
                 player.enableRate = true
                 player.currentTime = 0
                 player.play()
-                player.setVolume(0.5, fadeDuration: 0.2) // Softer Tingsha hit swell
+                player.setVolume(0.55, fadeDuration: 0.02)
             }
         }
     }
