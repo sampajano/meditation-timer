@@ -2,8 +2,6 @@
 
 These notes capture what we learned while iterating on the lock-screen Live Activity text.
 
-![Live Activity notification timer mechanics](../../docs/live-activity-design/assets/live-activity-notification-timer-mechanics.svg)
-
 ## What Works
 
 - Use SwiftUI dynamic date text for the primary timer:

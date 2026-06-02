@@ -16,10 +16,6 @@ Show the meditation timer on the Lock Screen, Dynamic Island, and paired Mac wit
 
 ![Live Activity design](assets/serial-live-activity-design.png)
 
-### Current Notification Timer Mechanics
-
-![Live Activity notification timer mechanics](assets/live-activity-notification-timer-mechanics.svg)
-
 ## Architecture
 
 The app has four boundaries:
