@@ -1,6 +1,11 @@
 import Foundation
 
 enum TimerBellLogic {
+    struct RunningSessionTransition {
+        let remaining: TimeInterval
+        let overtimeElapsed: TimeInterval?
+    }
+
     static func formatBellCountdownText(_ seconds: TimeInterval) -> String {
         let remaining = max(0, seconds)
         if remaining <= 30 {
@@ -30,6 +35,17 @@ enum TimerBellLogic {
     static func formatElapsedClockText(_ seconds: TimeInterval) -> String {
         let totalSeconds = Int(floor(max(0, seconds)))
         return formatClockText(totalSeconds)
+    }
+
+    static func runningSessionTransition(totalDuration: TimeInterval, elapsed: TimeInterval) -> RunningSessionTransition {
+        let duration = max(0, totalDuration)
+        let elapsedTime = max(0, elapsed)
+
+        guard elapsedTime < duration else {
+            return RunningSessionTransition(remaining: 0, overtimeElapsed: elapsedTime - duration)
+        }
+
+        return RunningSessionTransition(remaining: duration - elapsedTime, overtimeElapsed: nil)
     }
 
     static func nextOvertimeBellRemaining(overtimeElapsed: TimeInterval, spacing: Int) -> TimeInterval {

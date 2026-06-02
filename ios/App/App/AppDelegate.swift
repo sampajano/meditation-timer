@@ -1,6 +1,7 @@
 import UIKit
 import SwiftUI
 import AVFoundation
+import OSLog
 
 private let maxMeditationTime: TimeInterval = 60 * 60
 private let defaultMeditationTime: TimeInterval = 20 * 60
@@ -9,6 +10,36 @@ private let maxCountdownDuration: TimeInterval = 60
 private let defaultIntervalCount = 2
 private let startGongVolume: Float = 0.8
 private let intervalGongVolume: Float = 0.20
+private let liveActivityLog = Logger(subsystem: "com.lukex.goldenmeditation", category: "LiveActivity")
+private let liveActivityDebugLogLock = NSLock()
+
+func appendLiveActivityDebugLog(_ message: String) {
+    liveActivityDebugLogLock.lock()
+    defer { liveActivityDebugLogLock.unlock() }
+
+    guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        return
+    }
+
+    let url = directory.appendingPathComponent("live-activity-debug.log")
+    let timestamp = ISO8601DateFormatter().string(from: Date())
+    let line = "\(timestamp) \(message)\n"
+
+    guard let data = line.data(using: .utf8) else { return }
+
+    if !FileManager.default.fileExists(atPath: url.path) {
+        FileManager.default.createFile(atPath: url.path, contents: nil)
+    }
+
+    do {
+        let handle = try FileHandle(forWritingTo: url)
+        defer { try? handle.close() }
+        try handle.seekToEnd()
+        try handle.write(contentsOf: data)
+    } catch {
+        print("Failed to append Live Activity debug log: \(error)")
+    }
+}
 
 private struct MeditationPreferences {
     private enum Key {
@@ -1086,17 +1117,35 @@ struct MeditationAppView: View {
                 if let start = overtimeStartTime {
                     overtimeElapsed = overtimeAccumulated + Date().timeIntervalSince(start)
                 }
+                liveActivityLog.info("Timer tick overtime active elapsed=\(self.overtimeElapsed, privacy: .public) accumulated=\(self.overtimeAccumulated, privacy: .public)")
+                appendLiveActivityDebugLog("Timer tick overtime active elapsed=\(overtimeElapsed) accumulated=\(overtimeAccumulated)")
                 playOvertimeIntermediateBellIfNeeded(currentSecond: TimerBellLogic.elapsedSecondForBellProcessing(overtimeElapsed))
                 timeLeft = 0
-                updateOvertimeLiveActivity(elapsed: overtimeElapsed)
                 return
             }
 
             guard let start = sessionStartTime else { return }
             let totalElapsed = accumulatedElapsed + Date().timeIntervalSince(start)
-            let newTimeLeft = max(0, totalTime - totalElapsed)
-            timeLeft = newTimeLeft
-            updateRunningLiveActivity(remaining: timeLeft)
+            let transition = TimerBellLogic.runningSessionTransition(totalDuration: totalTime, elapsed: totalElapsed)
+            timeLeft = transition.remaining
+
+            if let overtimeElapsedAtEnd = transition.overtimeElapsed {
+                liveActivityLog.info("Timer reached end totalElapsed=\(totalElapsed, privacy: .public) totalTime=\(self.totalTime, privacy: .public) overtimeElapsed=\(overtimeElapsedAtEnd, privacy: .public)")
+                appendLiveActivityDebugLog("Timer reached end totalElapsed=\(totalElapsed) totalTime=\(totalTime) overtimeElapsed=\(overtimeElapsedAtEnd)")
+                overtimeActive = true
+                overtimeStartTime = Date().addingTimeInterval(-overtimeElapsedAtEnd)
+                overtimeAccumulated = 0
+                overtimeElapsed = overtimeElapsedAtEnd
+                timeLeft = 0
+                sessionStartTime = nil
+                accumulatedElapsed = 0
+                lastProcessedSecond = TimerBellLogic.elapsedSecondForBellProcessing(overtimeElapsedAtEnd)
+                startOvertimeLiveActivity(elapsed: overtimeElapsed)
+                liveActivityLog.info("Timer scheduled overtime Live Activity update before end gong")
+                appendLiveActivityDebugLog("Timer scheduled overtime Live Activity update before end gong")
+                playEndGong()
+                return
+            }
             
             let currentSecond = Int(totalElapsed)
             if currentSecond > lastProcessedSecond {
@@ -1107,19 +1156,6 @@ struct MeditationAppView: View {
                     }
                 }
                 lastProcessedSecond = currentSecond
-            }
-            
-            if newTimeLeft <= 0 {
-                playEndGong()
-                overtimeActive = true
-                overtimeStartTime = Date()
-                overtimeAccumulated = 0
-                overtimeElapsed = 0
-                timeLeft = 0
-                sessionStartTime = nil
-                accumulatedElapsed = 0
-                lastProcessedSecond = 0
-                startOvertimeLiveActivity(elapsed: overtimeElapsed)
             }
         }
     }
@@ -1138,6 +1174,8 @@ struct MeditationAppView: View {
 
     private func startMeditationLiveActivity(remaining: TimeInterval) {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App start Live Activity countdown remaining=\(remaining, privacy: .public) bellStatus=\(self.liveActivityBellStatusText ?? "nil", privacy: .public)")
+            appendLiveActivityDebugLog("App start Live Activity countdown remaining=\(remaining) bellStatus=\(liveActivityBellStatusText ?? "nil")")
             MeditationLiveActivityController.shared.start(
                 totalDuration: totalTime,
                 remaining: remaining,
@@ -1148,6 +1186,8 @@ struct MeditationAppView: View {
 
     private func resumeMeditationLiveActivity(remaining: TimeInterval) {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App sync Live Activity countdown remaining=\(remaining, privacy: .public) bellStatus=\(self.liveActivityBellStatusText ?? "nil", privacy: .public)")
+            appendLiveActivityDebugLog("App sync Live Activity countdown remaining=\(remaining) bellStatus=\(liveActivityBellStatusText ?? "nil")")
             MeditationLiveActivityController.shared.syncRunning(
                 totalDuration: totalTime,
                 remaining: remaining,
@@ -1158,6 +1198,8 @@ struct MeditationAppView: View {
 
     private func updateRunningLiveActivity(remaining: TimeInterval) {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App update Live Activity running remaining=\(remaining, privacy: .public) bellStatus=\(self.liveActivityBellStatusText ?? "nil", privacy: .public)")
+            appendLiveActivityDebugLog("App update Live Activity running remaining=\(remaining) bellStatus=\(liveActivityBellStatusText ?? "nil")")
             MeditationLiveActivityController.shared.updateRunning(
                 remaining: remaining,
                 bellStatusText: liveActivityBellStatusText
@@ -1167,6 +1209,8 @@ struct MeditationAppView: View {
 
     private func startOvertimeLiveActivity(elapsed: TimeInterval) {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App start Live Activity overtime elapsed=\(elapsed, privacy: .public) bellStatus=\(self.liveActivityBellStatusText ?? "nil", privacy: .public)")
+            appendLiveActivityDebugLog("App start Live Activity overtime elapsed=\(elapsed) bellStatus=\(liveActivityBellStatusText ?? "nil")")
             MeditationLiveActivityController.shared.startOvertime(
                 totalDuration: totalTime,
                 overtimeElapsed: elapsed,
@@ -1177,6 +1221,8 @@ struct MeditationAppView: View {
 
     private func resumeOvertimeLiveActivity(elapsed: TimeInterval) {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App sync Live Activity overtime elapsed=\(elapsed, privacy: .public) bellStatus=\(self.liveActivityBellStatusText ?? "nil", privacy: .public)")
+            appendLiveActivityDebugLog("App sync Live Activity overtime elapsed=\(elapsed) bellStatus=\(liveActivityBellStatusText ?? "nil")")
             MeditationLiveActivityController.shared.syncOvertime(
                 totalDuration: totalTime,
                 overtimeElapsed: elapsed,
@@ -1187,6 +1233,8 @@ struct MeditationAppView: View {
 
     private func updateOvertimeLiveActivity(elapsed: TimeInterval) {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App update Live Activity overtime elapsed=\(elapsed, privacy: .public) bellStatus=\(self.liveActivityBellStatusText ?? "nil", privacy: .public)")
+            appendLiveActivityDebugLog("App update Live Activity overtime elapsed=\(elapsed) bellStatus=\(liveActivityBellStatusText ?? "nil")")
             MeditationLiveActivityController.shared.updateOvertime(
                 overtimeElapsed: elapsed,
                 bellStatusText: liveActivityBellStatusText
@@ -1196,6 +1244,8 @@ struct MeditationAppView: View {
 
     private func pauseMeditationLiveActivity(remaining: TimeInterval, overtimeElapsed: TimeInterval?) {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App pause Live Activity remaining=\(remaining, privacy: .public) overtimeElapsed=\(overtimeElapsed ?? -1, privacy: .public) bellStatus=\(self.liveActivityBellStatusText ?? "nil", privacy: .public)")
+            appendLiveActivityDebugLog("App pause Live Activity remaining=\(remaining) overtimeElapsed=\(overtimeElapsed ?? -1) bellStatus=\(liveActivityBellStatusText ?? "nil")")
             MeditationLiveActivityController.shared.syncPaused(
                 totalDuration: totalTime,
                 remaining: remaining,
@@ -1206,7 +1256,11 @@ struct MeditationAppView: View {
     }
 
     private func syncMeditationLiveActivityForCurrentSession() {
+        liveActivityLog.info("App foreground sync requested isSessionActive=\(self.isSessionActive, privacy: .public) countdownActive=\(self.countdownActive, privacy: .public) isRunning=\(self.isRunning, privacy: .public) overtimeActive=\(self.overtimeActive, privacy: .public) timeLeft=\(self.timeLeft, privacy: .public) overtimeElapsed=\(self.overtimeElapsed, privacy: .public)")
+        appendLiveActivityDebugLog("App foreground sync requested isSessionActive=\(isSessionActive) countdownActive=\(countdownActive) isRunning=\(isRunning) overtimeActive=\(overtimeActive) timeLeft=\(timeLeft) overtimeElapsed=\(overtimeElapsed)")
         guard MeditationLiveActivityLogic.shouldSyncOnForeground(isSessionActive: isSessionActive, countdownActive: countdownActive) else {
+            liveActivityLog.info("App foreground sync skipped")
+            appendLiveActivityDebugLog("App foreground sync skipped")
             return
         }
 
@@ -1238,6 +1292,8 @@ struct MeditationAppView: View {
 
     private func endMeditationLiveActivity() {
         if #available(iOS 16.1, *) {
+            liveActivityLog.info("App end Live Activity requested")
+            appendLiveActivityDebugLog("App end Live Activity requested")
             MeditationLiveActivityController.shared.end()
         }
     }

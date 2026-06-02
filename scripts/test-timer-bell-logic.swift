@@ -29,6 +29,11 @@ private enum TimerBellLogicTests {
         expectEqual(TimerBellLogic.formatCountdownClockText(29.4), "0:30", "main countdown uses the same visible-second boundary as bell countdown")
         expectEqual(TimerBellLogic.formatCountdownClockText(29.0), "0:29", "main countdown changes on whole-second boundaries")
         expectEqual(TimerBellLogic.formatElapsedClockText(29.4), "0:29", "elapsed overtime display does not count ahead")
+        expectApproximatelyEqual(TimerBellLogic.runningSessionTransition(totalDuration: 120, elapsed: 119.4).remaining, 0.6, "running transition keeps near-end sessions in countdown")
+        expectEqual(TimerBellLogic.runningSessionTransition(totalDuration: 120, elapsed: 119.4).overtimeElapsed, nil, "running transition does not enter overtime before the session ends")
+        expectApproximatelyEqual(TimerBellLogic.runningSessionTransition(totalDuration: 120, elapsed: 120).remaining, 0, "running transition has no remaining time at the end boundary")
+        expectApproximatelyEqual(TimerBellLogic.runningSessionTransition(totalDuration: 120, elapsed: 120).overtimeElapsed ?? -1, 0, "running transition enters overtime exactly at the end boundary")
+        expectApproximatelyEqual(TimerBellLogic.runningSessionTransition(totalDuration: 120, elapsed: 126.5).overtimeElapsed ?? -1, 6.5, "running transition preserves delayed overtime elapsed time")
 
         let start = Date(timeIntervalSince1970: 100)
         expectEqual(MeditationLiveActivityLogic.endDate(startingAt: start, remaining: 90), Date(timeIntervalSince1970: 190), "live activity end date is derived from remaining time")

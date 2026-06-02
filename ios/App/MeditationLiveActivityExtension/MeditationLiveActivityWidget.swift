@@ -110,10 +110,10 @@ struct MeditationLiveActivityWidget: Widget {
     private func timerText(for context: ActivityViewContext<MeditationTimerActivityAttributes>) -> some View {
         switch context.state.timerMode {
         case .countdown:
-            Text(timerInterval: Date()...context.state.endsAt, countsDown: true)
+            Text(context.state.endsAt, style: .timer)
         case .elapsed:
             if let startedAt = context.state.startedAt {
-                Text("+") + Text(timerInterval: startedAt...context.state.endsAt, countsDown: false)
+                Text("+") + Text(startedAt, style: .timer)
             } else {
                 Text(context.state.primaryTimeText)
             }
