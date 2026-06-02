@@ -16,9 +16,9 @@ Show the meditation timer on the Lock Screen, Dynamic Island, and paired Mac wit
 
 ![Live Activity design](assets/serial-live-activity-design.png)
 
-### Current Notification Timer Design
+### Current Notification Timer Mechanics
 
-![Current Live Activity notification timer design](assets/live-activity-notification-current-design.png)
+![Live Activity notification timer mechanics](assets/live-activity-notification-timer-mechanics.svg)
 
 ## Architecture
 

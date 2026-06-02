@@ -2,7 +2,7 @@
 
 These notes capture what we learned while iterating on the lock-screen Live Activity text.
 
-![Current Live Activity notification timer design](../../docs/live-activity-design/assets/live-activity-notification-current-design.png)
+![Live Activity notification timer mechanics](../../docs/live-activity-design/assets/live-activity-notification-timer-mechanics.svg)
 
 ## What Works
 
