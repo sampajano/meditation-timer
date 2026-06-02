@@ -57,6 +57,7 @@ struct MeditationLiveActivityWidget: Widget {
     private static let dhammaSecondaryInk = Color(red: 0.38, green: 0.31, blue: 0.18)
     private static let islandPrimary = Color.white
     private static let islandSecondary = Color(red: 0.95, green: 0.79, blue: 0.42)
+    private static let lockScreenTimerColumnWidth: CGFloat = 132
 
     private func lockScreenView(context: ActivityViewContext<MeditationTimerActivityAttributes>) -> some View {
         HStack(spacing: 16) {
@@ -89,13 +90,17 @@ struct MeditationLiveActivityWidget: Widget {
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.84)
+                    .multilineTextAlignment(.trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
 
                 nextBellText(for: context)
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(Self.dhammaSecondaryInk)
-                        .lineLimit(1)
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(Self.dhammaSecondaryInk)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .frame(minWidth: 118, alignment: .trailing)
+            .frame(width: Self.lockScreenTimerColumnWidth, alignment: .trailing)
         }
         .padding(.vertical, 13)
         .padding(.horizontal, 14)
@@ -119,10 +124,10 @@ struct MeditationLiveActivityWidget: Widget {
 
     @ViewBuilder
     private func nextBellText(for context: ActivityViewContext<MeditationTimerActivityAttributes>) -> some View {
-        if let nextBellAt = context.state.nextBellAt {
-            Text("Next bell ") + Text(nextBellAt, format: .relative(presentation: .numeric, unitsStyle: .narrow))
-        } else if let nextBellText = context.state.nextBellText {
+        if let nextBellText = context.state.nextBellText {
             Text(nextBellText)
+        } else if let nextBellAt = context.state.nextBellAt {
+            Text("Next bell ") + Text(nextBellAt, format: .relative(presentation: .numeric, unitsStyle: .narrow))
         }
     }
 }

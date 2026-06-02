@@ -915,9 +915,9 @@ struct MeditationAppView: View {
         return "Next bell in \(formatBellCountdownText(remaining))"
     }
 
-    private var liveActivityNextBellRemaining: TimeInterval? {
+    private var liveActivityBellStatusText: String? {
         guard hasIntermediateBells else { return nil }
-        return overtimeActive ? nextOvertimeBellRemaining : nextIntermediateBellRemaining
+        return "Bell every \(TimerBellLogic.formatBellCadenceText(intermediateBellSpacing))"
     }
 
     private func formatBellCountdownText(_ seconds: TimeInterval) -> String {
@@ -1141,7 +1141,7 @@ struct MeditationAppView: View {
             MeditationLiveActivityController.shared.start(
                 totalDuration: totalTime,
                 remaining: remaining,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }
@@ -1151,7 +1151,7 @@ struct MeditationAppView: View {
             MeditationLiveActivityController.shared.syncRunning(
                 totalDuration: totalTime,
                 remaining: remaining,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }
@@ -1160,7 +1160,7 @@ struct MeditationAppView: View {
         if #available(iOS 16.1, *) {
             MeditationLiveActivityController.shared.updateRunning(
                 remaining: remaining,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }
@@ -1170,7 +1170,7 @@ struct MeditationAppView: View {
             MeditationLiveActivityController.shared.startOvertime(
                 totalDuration: totalTime,
                 overtimeElapsed: elapsed,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }
@@ -1180,7 +1180,7 @@ struct MeditationAppView: View {
             MeditationLiveActivityController.shared.syncOvertime(
                 totalDuration: totalTime,
                 overtimeElapsed: elapsed,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }
@@ -1189,7 +1189,7 @@ struct MeditationAppView: View {
         if #available(iOS 16.1, *) {
             MeditationLiveActivityController.shared.updateOvertime(
                 overtimeElapsed: elapsed,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }
@@ -1200,7 +1200,7 @@ struct MeditationAppView: View {
                 totalDuration: totalTime,
                 remaining: remaining,
                 overtimeElapsed: overtimeElapsed,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }
@@ -1231,7 +1231,7 @@ struct MeditationAppView: View {
             MeditationLiveActivityController.shared.syncOvertime(
                 totalDuration: totalTime,
                 overtimeElapsed: elapsed,
-                nextBellRemaining: liveActivityNextBellRemaining
+                bellStatusText: liveActivityBellStatusText
             )
         }
     }

@@ -10,6 +10,18 @@ enum TimerBellLogic {
         return "\(Int(ceil(remaining / 60)))m"
     }
 
+    static func formatBellCadenceText(_ seconds: TimeInterval) -> String {
+        let totalSeconds = max(1, Int(round(max(0, seconds))))
+        let minutes = totalSeconds / 60
+        let remainingSeconds = totalSeconds % 60
+
+        if remainingSeconds == 0 {
+            return "\(minutes)m"
+        }
+
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+
     static func formatCountdownClockText(_ seconds: TimeInterval) -> String {
         let totalSeconds = seconds <= 0 ? 0 : Int(ceil(seconds))
         return formatClockText(totalSeconds)

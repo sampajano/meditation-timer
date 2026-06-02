@@ -14,88 +14,84 @@ final class MeditationLiveActivityController {
 
     private init() {}
 
-    func start(totalDuration: TimeInterval, remaining: TimeInterval, nextBellRemaining: TimeInterval?) {
+    func start(totalDuration: TimeInterval, remaining: TimeInterval, bellStatusText: String?) {
         enqueue { [self] in
             await self.endExisting(dismissalPolicy: .immediate)
 
-            let state = self.countdownState(remaining: remaining, nextBellRemaining: nextBellRemaining)
+            let state = self.countdownState(remaining: remaining, bellStatusText: bellStatusText)
             self.requestNew(totalDuration: totalDuration, state: state, staleDate: state.endsAt.addingTimeInterval(60))
         }
     }
 
-    func syncRunning(totalDuration: TimeInterval, remaining: TimeInterval, nextBellRemaining: TimeInterval?) {
+    func syncRunning(totalDuration: TimeInterval, remaining: TimeInterval, bellStatusText: String?) {
         enqueue { [self] in
-            let state = self.countdownState(remaining: remaining, nextBellRemaining: nextBellRemaining)
+            let state = self.countdownState(remaining: remaining, bellStatusText: bellStatusText)
             await self.updateOrRequest(totalDuration: totalDuration, state: state, staleDate: state.endsAt.addingTimeInterval(60))
         }
     }
 
-    func resume(remaining: TimeInterval, nextBellRemaining: TimeInterval?) {
+    func resume(remaining: TimeInterval, bellStatusText: String?) {
         enqueue { [self] in
             let totalDuration = Activity<MeditationTimerActivityAttributes>.activities.first?.attributes.totalDuration ?? remaining
-            let state = self.countdownState(remaining: remaining, nextBellRemaining: nextBellRemaining)
+            let state = self.countdownState(remaining: remaining, bellStatusText: bellStatusText)
             await self.updateOrRequest(totalDuration: totalDuration, state: state, staleDate: state.endsAt.addingTimeInterval(60))
         }
     }
 
-    func updateRunning(remaining: TimeInterval, nextBellRemaining: TimeInterval?) {
+    func updateRunning(remaining: TimeInterval, bellStatusText: String?) {
         enqueue { [self] in
             guard let activity = self.activeActivity(), var state = self.currentState, state.timerMode == .countdown else { return }
 
             state.phase = "Meditating"
             state.isPaused = false
             state.pausedRemainingText = nil
-            state.primaryTimeText = MeditationLiveActivityLogic.primaryCountdownText(remaining)
-            state.compactTimeText = MeditationLiveActivityLogic.compactCountdownText(remaining)
-            state.nextBellText = MeditationLiveActivityLogic.nextBellText(nextBellRemaining)
-            state.nextBellAt = MeditationLiveActivityLogic.nextBellDate(remaining: nextBellRemaining)
+            state.nextBellText = bellStatusText
+            state.nextBellAt = nil
 
             await self.updateIfChanged(activity, state: state, staleDate: state.endsAt.addingTimeInterval(60))
         }
     }
 
-    func startOvertime(totalDuration: TimeInterval, overtimeElapsed: TimeInterval, nextBellRemaining: TimeInterval?) {
+    func startOvertime(totalDuration: TimeInterval, overtimeElapsed: TimeInterval, bellStatusText: String?) {
         enqueue { [self] in
-            let state = self.overtimeState(overtimeElapsed: overtimeElapsed, nextBellRemaining: nextBellRemaining)
+            let state = self.overtimeState(overtimeElapsed: overtimeElapsed, bellStatusText: bellStatusText)
             await self.updateOrRequest(totalDuration: totalDuration, state: state, staleDate: nil)
         }
     }
 
-    func syncOvertime(totalDuration: TimeInterval, overtimeElapsed: TimeInterval, nextBellRemaining: TimeInterval?) {
+    func syncOvertime(totalDuration: TimeInterval, overtimeElapsed: TimeInterval, bellStatusText: String?) {
         enqueue { [self] in
-            let state = self.overtimeState(overtimeElapsed: overtimeElapsed, nextBellRemaining: nextBellRemaining)
+            let state = self.overtimeState(overtimeElapsed: overtimeElapsed, bellStatusText: bellStatusText)
             await self.updateOrRequest(totalDuration: totalDuration, state: state, staleDate: nil)
         }
     }
 
-    func updateOvertime(overtimeElapsed: TimeInterval, nextBellRemaining: TimeInterval?) {
+    func updateOvertime(overtimeElapsed: TimeInterval, bellStatusText: String?) {
         enqueue { [self] in
             guard let activity = self.activeActivity(), var state = self.currentState, state.timerMode == .elapsed else { return }
 
             state.phase = "Extra time"
             state.isPaused = false
             state.pausedRemainingText = nil
-            state.primaryTimeText = MeditationLiveActivityLogic.primaryOvertimeText(overtimeElapsed)
-            state.compactTimeText = MeditationLiveActivityLogic.compactOvertimeText(overtimeElapsed)
-            state.nextBellText = MeditationLiveActivityLogic.nextBellText(nextBellRemaining)
-            state.nextBellAt = MeditationLiveActivityLogic.nextBellDate(remaining: nextBellRemaining)
+            state.nextBellText = bellStatusText
+            state.nextBellAt = nil
 
             await self.updateIfChanged(activity, state: state, staleDate: nil)
         }
     }
 
-    func pause(remaining: TimeInterval, overtimeElapsed: TimeInterval?, nextBellRemaining: TimeInterval?) {
+    func pause(remaining: TimeInterval, overtimeElapsed: TimeInterval?, bellStatusText: String?) {
         enqueue { [self] in
             let totalDuration = Activity<MeditationTimerActivityAttributes>.activities.first?.attributes.totalDuration ?? remaining
-            let state = self.pausedState(remaining: remaining, overtimeElapsed: overtimeElapsed, nextBellRemaining: nextBellRemaining)
+            let state = self.pausedState(remaining: remaining, overtimeElapsed: overtimeElapsed, bellStatusText: bellStatusText)
 
             await self.updateOrRequest(totalDuration: totalDuration, state: state, staleDate: nil)
         }
     }
 
-    func syncPaused(totalDuration: TimeInterval, remaining: TimeInterval, overtimeElapsed: TimeInterval?, nextBellRemaining: TimeInterval?) {
+    func syncPaused(totalDuration: TimeInterval, remaining: TimeInterval, overtimeElapsed: TimeInterval?, bellStatusText: String?) {
         enqueue { [self] in
-            let state = self.pausedState(remaining: remaining, overtimeElapsed: overtimeElapsed, nextBellRemaining: nextBellRemaining)
+            let state = self.pausedState(remaining: remaining, overtimeElapsed: overtimeElapsed, bellStatusText: bellStatusText)
             await self.updateOrRequest(totalDuration: totalDuration, state: state, staleDate: nil)
         }
     }
@@ -114,7 +110,7 @@ final class MeditationLiveActivityController {
         }
     }
 
-    private func countdownState(remaining: TimeInterval, nextBellRemaining: TimeInterval?) -> MeditationTimerActivityAttributes.ContentState {
+    private func countdownState(remaining: TimeInterval, bellStatusText: String?) -> MeditationTimerActivityAttributes.ContentState {
         let endsAt = MeditationLiveActivityLogic.endDate(remaining: remaining)
         return MeditationTimerActivityAttributes.ContentState(
             phase: "Meditating",
@@ -125,12 +121,12 @@ final class MeditationLiveActivityController {
             pausedRemainingText: nil,
             primaryTimeText: MeditationLiveActivityLogic.primaryCountdownText(remaining),
             compactTimeText: MeditationLiveActivityLogic.compactCountdownText(remaining),
-            nextBellText: MeditationLiveActivityLogic.nextBellText(nextBellRemaining),
-            nextBellAt: MeditationLiveActivityLogic.nextBellDate(remaining: nextBellRemaining)
+            nextBellText: bellStatusText,
+            nextBellAt: nil
         )
     }
 
-    private func overtimeState(overtimeElapsed: TimeInterval, nextBellRemaining: TimeInterval?) -> MeditationTimerActivityAttributes.ContentState {
+    private func overtimeState(overtimeElapsed: TimeInterval, bellStatusText: String?) -> MeditationTimerActivityAttributes.ContentState {
         let startedAt = MeditationLiveActivityLogic.overtimeStartDate(elapsed: overtimeElapsed)
         return MeditationTimerActivityAttributes.ContentState(
             phase: "Extra time",
@@ -141,12 +137,12 @@ final class MeditationLiveActivityController {
             pausedRemainingText: nil,
             primaryTimeText: MeditationLiveActivityLogic.primaryOvertimeText(overtimeElapsed),
             compactTimeText: MeditationLiveActivityLogic.compactOvertimeText(overtimeElapsed),
-            nextBellText: MeditationLiveActivityLogic.nextBellText(nextBellRemaining),
-            nextBellAt: MeditationLiveActivityLogic.nextBellDate(remaining: nextBellRemaining)
+            nextBellText: bellStatusText,
+            nextBellAt: nil
         )
     }
 
-    private func pausedState(remaining: TimeInterval, overtimeElapsed: TimeInterval?, nextBellRemaining: TimeInterval?) -> MeditationTimerActivityAttributes.ContentState {
+    private func pausedState(remaining: TimeInterval, overtimeElapsed: TimeInterval?, bellStatusText: String?) -> MeditationTimerActivityAttributes.ContentState {
         let primaryTimeText = overtimeElapsed.map(MeditationLiveActivityLogic.primaryOvertimeText) ?? MeditationLiveActivityLogic.primaryCountdownText(remaining)
         let compactTimeText = overtimeElapsed.map(MeditationLiveActivityLogic.compactOvertimeText) ?? MeditationLiveActivityLogic.compactCountdownText(remaining)
 
@@ -159,7 +155,7 @@ final class MeditationLiveActivityController {
             pausedRemainingText: primaryTimeText,
             primaryTimeText: primaryTimeText,
             compactTimeText: compactTimeText,
-            nextBellText: MeditationLiveActivityLogic.nextBellText(nextBellRemaining),
+            nextBellText: bellStatusText,
             nextBellAt: nil
         )
     }
