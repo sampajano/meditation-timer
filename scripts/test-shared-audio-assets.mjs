@@ -28,7 +28,7 @@ for (const file of forbiddenFiles) {
   }
 }
 
-const appDelegate = readFileSync(join(root, 'ios/App/App/AppDelegate.swift'), 'utf8');
+const appDelegate = readFileSync(join(root, 'ios/App/GoldenMeditationApp/AppDelegate.swift'), 'utf8');
 for (const resource of ['start', 'interval-bell']) {
   const expected = `Bundle.main.path(forResource: "${resource}", ofType: "mp3", inDirectory: "audio")`;
   if (!appDelegate.includes(expected)) {

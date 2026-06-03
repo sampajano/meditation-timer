@@ -14,7 +14,7 @@ dist-ssr
 .understand-anything/
 .playwright-mcp/
 web/dist/
-ios/App/App/public/
+ios/App/GoldenMeditationApp/public/
 *.local
 
 # Editor directories and files

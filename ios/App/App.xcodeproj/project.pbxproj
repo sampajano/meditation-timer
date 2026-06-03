@@ -83,7 +83,7 @@
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 					children = (
-						504EC3061FED79650016851F /* App */,
+						504EC3061FED79650016851F /* GoldenMeditationApp */,
 						50E0000B1FEDC1A000F3C39B /* MeditationLiveActivityExtension */,
 						504EC3051FED79650016851F /* Products */,
 						50B271D01FEDC1A000F3C39B /* web-public */,
@@ -100,7 +100,7 @@
 				name = Products;
 				sourceTree = "<group>";
 		};
-		504EC3061FED79650016851F /* App */ = {
+		504EC3061FED79650016851F /* GoldenMeditationApp */ = {
 			isa = PBXGroup;
 			children = (
 				504EC3071FED79650016851F /* AppDelegate.swift */,
@@ -112,7 +112,7 @@
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
 			);
-				path = App;
+				path = GoldenMeditationApp;
 				sourceTree = "<group>";
 			};
 		50E0000B1FEDC1A000F3C39B /* MeditationLiveActivityExtension */ = {
@@ -388,7 +388,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FNCD73V9FH;
-				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_FILE = GoldenMeditationApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -410,7 +410,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FNCD73V9FH;
-				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_FILE = GoldenMeditationApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

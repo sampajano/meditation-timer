@@ -9,5 +9,5 @@
 ## Architecture Orientation
 
 - Treat the iPhone app as a native UIKit/SwiftUI app.
-- The active iOS entry point is `ios/App/App/AppDelegate.swift`, which hosts `MeditationAppView` through `UIHostingController`.
+- The active iOS entry point is `ios/App/GoldenMeditationApp/AppDelegate.swift`, which hosts `MeditationAppView` through `UIHostingController`.
 - The React + Vite app under `web/` is separate from the production iPhone UI. Do not assume the iOS app runs the React UI in a WebView.

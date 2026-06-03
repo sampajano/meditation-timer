@@ -9,7 +9,7 @@
     "lint": "eslint -c web/eslint.config.js web",
     "test:audio": "node scripts/test-shared-audio-assets.mjs",
     "test:live-activity": "node scripts/test-live-activity-widget.mjs",
-    "test:timer": "swiftc ios/App/App/TimerBellLogic.swift ios/App/App/MeditationLiveActivityLogic.swift ios/App/App/MeditationTimerActivityAttributes.swift scripts/test-timer-bell-logic.swift -o /tmp/timer-bell-logic-tests && /tmp/timer-bell-logic-tests",
+    "test:timer": "swiftc ios/App/GoldenMeditationApp/TimerBellLogic.swift ios/App/GoldenMeditationApp/MeditationLiveActivityLogic.swift ios/App/GoldenMeditationApp/MeditationTimerActivityAttributes.swift scripts/test-timer-bell-logic.swift -o /tmp/timer-bell-logic-tests && /tmp/timer-bell-logic-tests",
     "preview": "vite preview --config web/vite.config.js",
     "ios:install": "node scripts/install-ios.mjs",
     "ios:open": "open ios/App/App.xcodeproj"

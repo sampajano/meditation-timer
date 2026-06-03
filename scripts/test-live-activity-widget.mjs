@@ -8,7 +8,7 @@ const widget = readFileSync(
   join(root, 'ios/App/MeditationLiveActivityExtension/MeditationLiveActivityWidget.swift'),
   'utf8',
 );
-const appDelegate = readFileSync(join(root, 'ios/App/App/AppDelegate.swift'), 'utf8');
+const appDelegate = readFileSync(join(root, 'ios/App/GoldenMeditationApp/AppDelegate.swift'), 'utf8');
 const compactTrailingMatch = widget.match(/compactTrailing:\s*\{([\s\S]*?)\}\s*minimal:/);
 const compactTrailingBody = compactTrailingMatch?.[1] ?? '';
 

@@ -1,6 +1,6 @@
 # Golden Meditation iOS
 
-Golden Meditation is currently an iOS-first app. The iPhone experience is implemented as a native UIKit/SwiftUI app inside `ios/App/App/AppDelegate.swift`.
+Golden Meditation is currently an iOS-first app. The iPhone experience is implemented as a native UIKit/SwiftUI app inside `ios/App/GoldenMeditationApp/AppDelegate.swift`.
 
 ## Install on iPhone
 
@@ -16,8 +16,8 @@ npm run ios:open
 
 ![Golden Meditation iOS architecture](docs/ios-architecture.png)
 
-- `ios/App/App/AppDelegate.swift` is the native app entry point and contains the SwiftUI timer UI.
-- `ios/App/App/Info.plist` enables the iOS `audio` background mode.
+- `ios/App/GoldenMeditationApp/AppDelegate.swift` is the native app entry point and contains the SwiftUI timer UI.
+- `ios/App/GoldenMeditationApp/Info.plist` enables the iOS `audio` background mode.
 - `shared/audio/` contains the app bell audio bundled into iOS and imported by the web app.
 - `web/public/` contains web static assets and legacy image assets still bundled for the native iOS background.
 - `web/` contains a separate React + Vite web implementation.
