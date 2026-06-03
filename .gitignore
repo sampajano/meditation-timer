@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 .build/
+.understand-anything/
+.playwright-mcp/
 web/dist/
 ios/App/App/public/
 *.local
