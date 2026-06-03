@@ -42,7 +42,15 @@ struct MeditationLiveActivityWidget: Widget {
                     }
                 }
             } compactLeading: {
+                Image(systemName: "bell.fill")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(Self.dhammaGoldSoft)
             } compactTrailing: {
+                Text(context.state.compactTimeText)
+                    .font(.caption2.monospacedDigit().weight(.semibold))
+                    .foregroundStyle(Self.islandPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             } minimal: {
                 Image(systemName: "bell.fill")
                     .foregroundStyle(Self.dhammaGold)

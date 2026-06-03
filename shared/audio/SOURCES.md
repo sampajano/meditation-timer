@@ -46,7 +46,7 @@ For a final App Store release, prefer downloading the original WAV/FLAC files fr
 - Processing notes:
   - Trimmed off the tiny lead silence, then exported a 20-second interval bell.
   - Applied a fade-out from the beginning so the bell fully disappears by 20 seconds.
-  - Lowered the file gain by 5.8 dB, then the app plays it at 0.65 volume so it stays below the main start/end bell.
+  - Lowered the file gain by 5.8 dB. The iOS app now plays it at 0.12 volume because this brighter bell still reads louder than the main start/end bell at higher playback levels.
 
 ## Unedited Additional Candidates
 

@@ -9,7 +9,7 @@ private let defaultCountdownDuration: TimeInterval = 15
 private let maxCountdownDuration: TimeInterval = 60
 private let defaultIntervalCount = 2
 private let startGongVolume: Float = 0.8
-private let intervalGongVolume: Float = 0.20
+private let intervalGongVolume: Float = 0.12
 private let liveActivityLog = Logger(subsystem: "com.lukex.goldenmeditation", category: "LiveActivity")
 private let liveActivityDebugLogLock = NSLock()
 
