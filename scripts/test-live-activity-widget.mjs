@@ -28,6 +28,14 @@ if (/private func compactTimerText\(for context:/s.test(widget)) {
   failures.push('Compact timer helper should be removed when compact time is not displayed.');
 }
 
+if (/Text\(\s*startedAt\s*,\s*style:\s*\.timer\s*\)/s.test(widget)) {
+  failures.push('Overtime Live Activity text should not render a past start date with SwiftUI .timer, which can crash the extension.');
+}
+
+if (!/endsAt\.timeIntervalSinceNow\s*>\s*0[\s\S]*?Text\(context\.state\.endsAt,\s*style:\s*\.timer\)/s.test(widget)) {
+  failures.push('Countdown Live Activity timer should guard against stale or past end dates before using SwiftUI .timer.');
+}
+
 if (/lastRunningLiveActivityCompactTimeText/.test(appDelegate)) {
   failures.push('The app should not keep minute-refresh state when compact time is hidden.');
 }
