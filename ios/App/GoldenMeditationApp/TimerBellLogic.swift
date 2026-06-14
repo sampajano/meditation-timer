@@ -55,6 +55,14 @@ enum TimerBellLogic {
         return max(0, nextBell - elapsed)
     }
 
+    static func overtimeBellSpacing(hasIntermediateBells: Bool, intermediateSpacing: TimeInterval, fallbackSpacing: TimeInterval) -> TimeInterval {
+        if hasIntermediateBells {
+            return max(1, intermediateSpacing)
+        }
+
+        return max(1, fallbackSpacing)
+    }
+
     static func elapsedSecondForBellProcessing(_ elapsed: TimeInterval) -> Int {
         Int(floor(max(0, elapsed) + 0.02))
     }

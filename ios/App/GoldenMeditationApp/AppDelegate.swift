@@ -8,6 +8,7 @@ private let defaultMeditationTime: TimeInterval = 20 * 60
 private let defaultCountdownDuration: TimeInterval = 15
 private let maxCountdownDuration: TimeInterval = 60
 private let defaultIntervalCount = 2
+private let defaultOvertimeBellSpacing: TimeInterval = 10 * 60
 private let startGongVolume: Float = 0.8
 private let intervalGongVolume: Float = 0.12
 private let liveActivityLog = Logger(subsystem: "com.lukex.goldenmeditation", category: "LiveActivity")
@@ -927,13 +928,12 @@ struct MeditationAppView: View {
     }
 
     private var nextOvertimeBellRemaining: TimeInterval? {
-        guard hasIntermediateBells else { return nil }
-        let spacing = max(1, Int(round(intermediateBellSpacing)))
+        let spacing = max(1, Int(round(overtimeBellSpacing)))
         return TimerBellLogic.nextOvertimeBellRemaining(overtimeElapsed: overtimeElapsed, spacing: spacing)
     }
 
     private var sessionBellStatusText: String? {
-        guard isSessionActive && !countdownActive && hasIntermediateBells else {
+        guard isSessionActive && !countdownActive else {
             return nil
         }
 
@@ -947,8 +947,20 @@ struct MeditationAppView: View {
     }
 
     private var liveActivityBellStatusText: String? {
+        if overtimeActive {
+            return "Bell every \(TimerBellLogic.formatBellCadenceText(overtimeBellSpacing))"
+        }
+
         guard hasIntermediateBells else { return nil }
         return "Bell every \(TimerBellLogic.formatBellCadenceText(intermediateBellSpacing))"
+    }
+
+    private var overtimeBellSpacing: TimeInterval {
+        TimerBellLogic.overtimeBellSpacing(
+            hasIntermediateBells: hasIntermediateBells,
+            intermediateSpacing: intermediateBellSpacing,
+            fallbackSpacing: defaultOvertimeBellSpacing
+        )
     }
 
     private func formatBellCountdownText(_ seconds: TimeInterval) -> String {
@@ -1161,9 +1173,9 @@ struct MeditationAppView: View {
     }
 
     private func playOvertimeIntermediateBellIfNeeded(currentSecond: Int) {
-        guard hasIntermediateBells, currentSecond > lastProcessedSecond else { return }
+        guard currentSecond > lastProcessedSecond else { return }
 
-        let spacing = max(1, Int(round(intermediateBellSpacing)))
+        let spacing = max(1, Int(round(overtimeBellSpacing)))
         for sec in (lastProcessedSecond + 1)...currentSecond {
             if sec > 0 && sec % spacing == 0 {
                 playIntervalGong()

@@ -67,6 +67,8 @@ private enum TimerBellLogicTests {
         expectApproximatelyEqual(TimerBellLogic.nextOvertimeBellRemaining(overtimeElapsed: 0, spacing: 30), 30, "first overtime bell is thirty seconds after the session ends")
         expectApproximatelyEqual(TimerBellLogic.nextOvertimeBellRemaining(overtimeElapsed: 0.2, spacing: 30), 29.8, "overtime bell countdown starts from the next spacing boundary")
         expectApproximatelyEqual(TimerBellLogic.nextOvertimeBellRemaining(overtimeElapsed: 30, spacing: 30), 30, "after a bell boundary, the next overtime bell is one full interval later")
+        expectApproximatelyEqual(TimerBellLogic.overtimeBellSpacing(hasIntermediateBells: true, intermediateSpacing: 90, fallbackSpacing: 600), 90, "overtime keeps the configured interval when intermediate bells exist")
+        expectApproximatelyEqual(TimerBellLogic.overtimeBellSpacing(hasIntermediateBells: false, intermediateSpacing: 1200, fallbackSpacing: 600), 600, "overtime falls back to ten-minute bells when no intermediate bells exist")
 
         expectEqual(TimerBellLogic.elapsedSecondForBellProcessing(29.99), 30, "tiny timer jitter before a whole second should not delay the overtime bell")
         expectEqual(TimerBellLogic.elapsedSecondForBellProcessing(29.90), 29, "meaningfully early ticks should not fire the overtime bell early")
